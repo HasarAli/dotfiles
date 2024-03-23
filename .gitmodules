@@ -1,0 +1,3 @@
+[submodule ".config/bash/bash-sensible"]
+	path = .config/bash/bash-sensible
+	url = https://github.com/mrzool/bash-sensible.git
