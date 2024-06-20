@@ -1,0 +1,26 @@
+# Enable incremental history search with up/down arrows 
+# Learn more about this here: http://codeinthehole.com/writing/the-most-important-command-line-tip-incremental-history-searching-with-inputrc/
+"\e[A": history-search-backward
+"\e[B": history-search-forward
+"\e[C": forward-char
+"\e[D": backward-char
+
+## SMARTER TAB-COMPLETION 
+
+# Perform file completion in a case insensitive fashion
+set completion-ignore-case on
+
+# Treat hyphens and underscores as equivalent
+set completion-map-case on
+
+# Display matches for ambiguous patterns at first tab press
+set show-all-if-ambiguous on
+
+# Immediately add a trailing slash when autocompleting symlinks to directories
+set mark-symlinked-directories on
+
+# A character denoting a file's type is appended to the filename when listing possible completions
+set visible-stats on
+
+# Turns off the use of the internal pager when returning long completion lists
+set page-completions off
