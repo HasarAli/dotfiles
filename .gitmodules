@@ -1,0 +1,4 @@
+[submodule ".config/bash/bash-sensible"]
+	path = .config/bash/bash-sensible
+	url = git@github.com:HasarAli/bash-sensible.git
+	branch = master
