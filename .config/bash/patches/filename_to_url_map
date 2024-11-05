@@ -1,0 +1,2 @@
+git-prompt.sh https://raw.githubusercontent.com/git/git/refs/heads/master/contrib/completion/git-prompt.sh
+sensible.bash https://raw.githubusercontent.com/mrzool/bash-sensible/refs/heads/master/sensible.bash
