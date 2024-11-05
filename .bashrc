@@ -8,6 +8,31 @@ case $- in
 *) return ;;
 esac
 
+add_exec_permission_if_missing() {
+    local file="$1"
+	if [ ! -x "$file" ]; then
+		echo "Adding executable permission to $file"
+		chmod +x "$file"
+	fi
+}
+
+# Download (and patch) bash configs
+PATCHES_DIR="$HOME/.config/bash/patches"
+SCRIPTS_DIR="$HOME/.config/bash/scripts"
+FILENAME_TO_URL_MAP="$PATCHES_DIR/filename_to_url_map"
+DOWNLOAD_SCRIPT="$SCRIPTS_DIR/download_and_patch_map.sh"
+
+if [ -r "$FILENAME_TO_URL_MAP" ] && [ -f "$DOWNLOAD_SCRIPT" ]; then 
+	(
+		add_exec_permission_if_missing "$DOWNLOAD_SCRIPT"
+		mkdir -p $HOME/.config/bash/patched && cd "$_" 
+		# Do nothing if fails
+		"$DOWNLOAD_SCRIPT" "$FILENAME_TO_URL_MAP" "$PATCHES_DIR" || true 
+	)
+else
+	>&2 printf "Warning: Could not find bash configs to patch" 
+fi
+
 # make less more friendly for non-text input files, see lesspipe(1)
 [ -x /usr/bin/lesspipe ] && eval "$(SHELL=/bin/sh lesspipe)"
 
@@ -38,9 +63,9 @@ if [ -n "$force_color_prompt" ]; then
 fi
 
 if [ "$color_prompt" = yes ]; then
-	PS1='${debian_chroot:+($debian_chroot)}\[\033[01;32m\]\u@\h\[\033[00m\]:\[\033[01;34m\]\w\[\033[00m\]\$ '
+	PS1='${debian_chroot:+($debian_chroot)}\[\033[01;32m\]\u@\h\[\033[00m\]:\[\033[01;34m\]\w\[\033[33m\]$(__git_ps1 " (%s)")\[\033[00m\]\$ '
 else
-	PS1='${debian_chroot:+($debian_chroot)}\u@\h:\w\$ '
+	PS1='${debian_chroot:+($debian_chroot)}\u@\h:\w$(__git_ps1 " (%s)")\$ '
 fi
 unset color_prompt force_color_prompt
 
