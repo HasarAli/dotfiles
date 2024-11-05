@@ -33,6 +33,12 @@ else
 	>&2 printf "Warning: Could not find bash configs to patch" 
 fi
 
+for patched_bash_configs in "$HOME/.config/bash/patched"/*; do
+	if [[ -f "$patched_bash_configs" ]]; then
+		source "$patched_bash_configs"
+	fi
+done
+
 # make less more friendly for non-text input files, see lesspipe(1)
 [ -x /usr/bin/lesspipe ] && eval "$(SHELL=/bin/sh lesspipe)"
 
