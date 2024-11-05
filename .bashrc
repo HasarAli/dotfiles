@@ -109,3 +109,6 @@ export NVM_DIR="$HOME/.nvm"
 
 # tmux
 export XDG_CONFIG_HOME="$HOME/.config"
+
+# Install Jetbrains Mono Nerdfont for nvim (if missing)
+"$SCRIPTS_DIR/install_nerdfont.sh"
