@@ -121,11 +121,6 @@ if ! shopt -oq posix; then
 	fi
 fi
 
-# Load script for sensible-bash
-if [ -f ~/.config/bash/bash-sensible/sensible.bash ]; then
-	source ~/.config/bash/bash-sensible/sensible.bash
-fi
-
 export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"                   # This loads nvm
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion" # This loads nvm bash_completion
