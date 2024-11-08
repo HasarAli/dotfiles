@@ -111,4 +111,8 @@ export NVM_DIR="$HOME/.nvm"
 export XDG_CONFIG_HOME="$HOME/.config"
 
 # Install Jetbrains Mono Nerdfont for nvim (if missing)
-"$SCRIPTS_DIR/install_nerdfont.sh"
+FONT_SCRIPT="$SCRIPTS_DIR/install_nerdfont.sh"
+if [ -f "$FONT_SCRIPT" ]; then
+	add_exec_permission_if_missing "$FONT_SCRIPT"
+	"$FONT_SCRIPT"
+fi

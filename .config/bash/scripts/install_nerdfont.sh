@@ -6,11 +6,6 @@ FONT_URL="https://github.com/ryanoasis/nerd-fonts/releases/download/v3.0.2/JetBr
 FONT_DIR="$HOME/.local/share/fonts"
 FONT_ZIP="$FONT_DIR/JetBrainsMono.zip"
 
-# Check if the font is already installed
-check_font_installed() {
-    return fc-list | grep -qi "$FONT_NAME"
-}
-
 # Download and install the font
 install_font() {
     mkdir -p "$FONT_DIR"
@@ -35,7 +30,7 @@ install_font() {
 }
 
 main() {
-    if ! check_font_installed; then
+    if [ $(fc-list | grep -ci "$FONT_NAME") -eq 0 ]; then
         install_font || { printf "Installation failed.\n" >&2; return 1; }
     fi
 }
