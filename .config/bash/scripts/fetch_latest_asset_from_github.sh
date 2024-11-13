@@ -1,15 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# Usage: ./get_latest_download_url.sh <github_user> <repository> <asset_name>
-
-print_usage() {
-    printf "Usage: %s <github_user> <repository> <asset_name>\n" "$(basename "$0")" >&2
-    exit 1
-}
-
-# Fetch the latest release's download URL from GitHub assets
-get_latest_download_url() {
+get_latest_assest_version_and_url() {
     local github_user="$1"
     local repo="$2"
     local asset_name="$3"
@@ -22,7 +14,7 @@ get_latest_download_url() {
     )
 
     if [[ -z "$download_url" ]]; then
-        printf "Error: Asset '%s' not found or unable to fetch.\n" "$asset_name" >&2
+        >&2 printf "Error: Asset '%s' not found or unable to fetch.\n" "$asset_name"
         exit 1
     fi
 
@@ -32,21 +24,20 @@ get_latest_download_url() {
         exit 1 
     fi 
     
-    printf "Version: %s\nDownload URL: %s\n" "$version" "$download_url"
+    printf '{"version": "%s", "url": "%s"}\n' "$version" "$url"
 }
 
-# Main function to process input arguments and call the appropriate function
 main() {
     if [[ $# -ne 3 ]]; then
-        printf "Error: Missing required arguments.\n" >&2
-        print_usage
+        >&2 printf "Usage: %s <github_user> <repository> <asset_name>\n" "$(basename "$0")"
+        exit 1
     fi
 
     local github_user="$1"
     local repo="$2"
     local asset_name="$3"
 
-    get_latest_download_url "$github_user" "$repo" "$asset_name"
+    get_latest_assest_version_and_download_url "$github_user" "$repo" "$asset_name"
 }
 
 main "$@"
