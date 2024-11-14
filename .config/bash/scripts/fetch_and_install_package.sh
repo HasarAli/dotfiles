@@ -12,10 +12,10 @@ extract_archived_package() {
     file_type=$(file -b --mime-type "$archive_name")
 
     case "$file_type" in
-        application/x-gzip)    tar -xzvf "$archive_name" -C "$temp_dir" ;;
-        application/x-bzip2)   tar -xjvf "$archive_name" -C "$temp_dir" ;;
-        application/x-xz)      tar -xJvf "$archive_name" -C "$temp_dir" ;;
-        application/zip)       unzip "$archive_name" -d "$temp_dir" ;;
+        *gzip)    tar -xzvf "$archive_name" -C "$temp_dir" ;;
+        *bzip2)   tar -xjvf "$archive_name" -C "$temp_dir" ;;
+        *xz)      tar -xJvf "$archive_name" -C "$temp_dir" ;;
+        *zip)     unzip "$archive_name" -d "$temp_dir" ;;
         *)
             printf "Error: Unsupported file type '%s' for %s\n" "$file_type" "$archive_name" >&2
             rm -rf "$temp_dir"
@@ -47,17 +47,7 @@ extract_archived_package() {
     printf "%s" "$extracted_dir"
 }
 
-get_installed_version() {
-    local package_name="$1"
-
-    if ! command -v "$BIN_PATH/$package_name" >/dev/null; then
-        printf "none"
-    else
-        "$BIN_PATH/$package_name" --version | awk 'NR==1{print $2}'
-    fi
-}
-
-install_binary() {
+install_archive() {
     local package_name="$1"
     local download_url="$2"
     local archive_name install_path package_bin_path
@@ -91,22 +81,15 @@ install_binary() {
 }
 
 main() {
-    if [[ $# -ne 3 ]]; then
-        printf "Usage: %s <package_name> <candidate_version> <download_url>\n" "$(basename "$0")" >&2
+    if [[ $# -ne 2 ]]; then
+        printf "Usage: %s <package_name> <download_url>\n" "$(basename "$0")" >&2
         exit 1
     fi
 
     local package_name="$1"
-    local latest_version="$2"
-    local download_url="$3"
-    local installed_version
-
-    installed_version=$(get_installed_version "$package_name")
-
-    if [[ "$installed_version" != "$latest_version" ]]; then
-        printf "Update required: Installed version '%s', latest version '%s'.\n" "$installed_version" "$latest_version"
-        install_binary "$package_name" "$download_url" || exit 1
-    fi
+    local download_url="$2"
+    
+    install_archive "$package_name" "$download_url" || exit 1
 }
 
 main "$@"

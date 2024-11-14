@@ -24,7 +24,7 @@ get_latest_assest_version_and_url() {
         exit 1 
     fi 
     
-    printf '{"version": "%s", "url": "%s"}\n' "$version" "$url"
+    printf '{"version": "%s", "url": "%s"}\n' "$version" "$download_url"
 }
 
 main() {
@@ -37,7 +37,7 @@ main() {
     local repo="$2"
     local asset_name="$3"
 
-    get_latest_assest_version_and_download_url "$github_user" "$repo" "$asset_name"
+    get_latest_assest_version_and_url "$github_user" "$repo" "$asset_name"
 }
 
 main "$@"
