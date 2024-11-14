@@ -25,7 +25,7 @@ main() {
     local package_name="$4"
 
     local asset_data latest_version url
-    asset_data=$("$SCRIPTS/fetch_latest_asset_data_from_github" "$github_user" "$repository" "$package_name") || exit 1
+    asset_data=$("$SCRIPTS/fetch_latest_asset_data_from_github.sh" "$github_user" "$repository" "$package_name") || exit 1
     latest_version=$(jq -r '.version' <<< "$asset_data")
     url=$(jq -r '.url' <<< "$asset_data")
 
@@ -34,7 +34,7 @@ main() {
 
     if [[ "$installed_version" != "$latest_version" ]]; then
         printf "Update required for '%s': Installed version '%s', latest version '%s'.\n" "$command_name" "$installed_version" "$latest_version"
-        "$SCRIPTS/fetch_and_install_package" "$package_name" "$url" || exit 1
+        "$SCRIPTS/fetch_and_install_package.sh" "$command_name" "$url" || exit 1
     fi
 }
 

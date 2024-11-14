@@ -1,15 +1,15 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-INSTALL_ROOT="/opt/app"
+INSTALL_ROOT="/opt"
 BIN_PATH="/usr/local/bin"
 
 extract_archived_package() {
     local archive_name="$1"
     local extracted_dir temp_dir file_type
 
-    temp_dir=$(mktemp -d)
-    file_type=$(file -b --mime-type "$archive_name")
+    local temp_dir; temp_dir=$(mktemp -d)
+    local file_type; file_type=$(file -b --mime-type "$archive_name")
 
     case "$file_type" in
         *gzip)    tar -xzvf "$archive_name" -C "$temp_dir" ;;
@@ -23,8 +23,8 @@ extract_archived_package() {
             ;;
     esac
 
-    dirs=$(find "$temp_dir" -maxdepth 1 -mindepth 1 -type d)
-    files=$(find "$temp_dir" -mindepth 1 -maxdepth 1 -type f)
+    local dirs; dirs=$(find "$temp_dir" -maxdepth 1 -mindepth 1 -type d)
+    local files; files=$(find "$temp_dir" -mindepth 1 -maxdepth 1 -type f)
 
     if [[ "$(echo "$dirs" | wc -l)" -lt 1 ]]; then
         printf "Error: No directory found after extraction.\n" >&2
@@ -38,21 +38,19 @@ extract_archived_package() {
         return 1
     fi
 
-    extracted_dir=$(basename "$dirs")
-
-    sudo mv "$temp_dir/$extracted_dir" .
+    sudo mv "$dirs" .
     sudo rm -f "$archive_name"
     rm -rf "$temp_dir"
 
+    local extracted_dir; extracted_dir=$(basename "$dirs")
     printf "%s" "$extracted_dir"
 }
 
 install_archive() {
-    local package_name="$1"
+    local command_name="$1"
     local download_url="$2"
-    local archive_name install_path package_bin_path
-
-    archive_name=$(basename "$download_url")
+    
+    local archive_name; archive_name=$(basename "$download_url")
     if ! curl -LO "$download_url"; then
         printf "Error: Failed to download archive from %s.\n" "$download_url" >&2
         return 1
@@ -64,15 +62,15 @@ install_archive() {
         return 1
     }
 
-    install_path="$INSTALL_ROOT/$extracted_package"
+    local install_path; install_path="$INSTALL_ROOT/$extracted_package"
     sudo rm -rf "$install_path"
     sudo mkdir -p "$install_path"
     sudo chmod a+rX "$install_path"
-    sudo mv "$extracted_package" "$install_path"
+    sudo mv "$extracted_package" "$INSTALL_ROOT"
 
-    package_bin_path="$install_path/bin/$package_name"
+    local package_bin_path; package_bin_path="$install_path/bin/$command_name"
     if [[ -x "$package_bin_path" ]]; then
-        sudo ln -sf "$package_bin_path" "$BIN_PATH/$package_name"
+        sudo ln -sf "$package_bin_path" "$BIN_PATH/"
         printf "Installation completed successfully.\n"
     else
         printf "Error: Expected binary not found at '%s'.\n" "$package_bin_path" >&2
@@ -82,14 +80,14 @@ install_archive() {
 
 main() {
     if [[ $# -ne 2 ]]; then
-        printf "Usage: %s <package_name> <download_url>\n" "$(basename "$0")" >&2
+        printf "Usage: %s <command_name> <download_url>\n" "$(basename "$0")" >&2
         exit 1
     fi
 
-    local package_name="$1"
+    local command_name="$1"
     local download_url="$2"
     
-    install_archive "$package_name" "$download_url" || exit 1
+    install_archive "$command_name" "$download_url" || exit 1
 }
 
 main "$@"
