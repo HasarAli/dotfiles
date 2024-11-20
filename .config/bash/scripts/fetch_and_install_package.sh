@@ -11,10 +11,10 @@ extract_archived_package() {
     local file_type; file_type=$(file -b --mime-type "$archive_name")
 
     case "$file_type" in
-        *gzip)    tar -xzvf "$archive_name" -C "$temp_dir" ;;
-        *bzip2)   tar -xjvf "$archive_name" -C "$temp_dir" ;;
-        *xz)      tar -xJvf "$archive_name" -C "$temp_dir" ;;
-        *zip)     unzip "$archive_name" -d "$temp_dir" ;;
+        *gzip)    tar -xzvf "$archive_name" -C "$temp_dir" >/dev/null 2>&1 ;;
+        *bzip2)   tar -xjvf "$archive_name" -C "$temp_dir"  >/dev/null 2>&1 ;;
+        *xz)      tar -xJvf "$archive_name" -C "$temp_dir"  >/dev/null 2>&1 ;;
+        *zip)     unzip -qq "$archive_name" -d "$temp_dir" ;;
         *)
             printf "Error: Unsupported file type '%s' for %s\n" "$file_type" "$archive_name" >&2
             rm -rf "$temp_dir"
@@ -37,7 +37,7 @@ extract_archived_package() {
         return 1
     fi
 
-    sudo mv "$dirs" .
+    sudo mv "$dirs" "$(pwd)"
     sudo rm -f "$archive_name"
     rm -rf "$temp_dir"
 
@@ -50,7 +50,7 @@ install_archive() {
     local download_url="$2"
     
     local archive_name; archive_name=$(basename "$download_url")
-    if ! curl -LO "$download_url"; then
+    if ! curl -#fLO "$download_url"; then
         printf "Error: Failed to download archive from %s.\n" "$download_url" >&2
         return 1
     fi
