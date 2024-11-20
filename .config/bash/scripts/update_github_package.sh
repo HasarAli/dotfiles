@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-SCRIPTS="~/.config/bash/scripts"
+SCRIPTS="$HOME/.config/bash/scripts"
 
 get_installed_version() {
     local command_name="$1"
