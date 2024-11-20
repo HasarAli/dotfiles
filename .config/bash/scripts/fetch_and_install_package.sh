@@ -6,7 +6,6 @@ BIN_PATH="/usr/local/bin"
 
 extract_archived_package() {
     local archive_name="$1"
-    local extracted_dir temp_dir file_type
 
     local temp_dir; temp_dir=$(mktemp -d)
     local file_type; file_type=$(file -b --mime-type "$archive_name")
@@ -26,13 +25,13 @@ extract_archived_package() {
     local dirs; dirs=$(find "$temp_dir" -maxdepth 1 -mindepth 1 -type d)
     local files; files=$(find "$temp_dir" -mindepth 1 -maxdepth 1 -type f)
 
-    if [[ "$(echo "$dirs" | wc -l)" -lt 1 ]]; then
+    if [[ -z "$dirs" ]]; then
         printf "Error: No directory found after extraction.\n" >&2
         rm -rf "$temp_dir"
         return 1
     fi
 
-    if [[ "$(echo "$dirs" | wc -l)" -ne 1 ]] && [[ "$(echo "$files" | wc -l)" -eq 0 ]]; then
+    if [[ "$(echo "$dirs" | wc -l)" -gt 1 ]] || [[ ! -z "$files" ]]; then
         printf "Error: Expected only one root directory, but found more.\n" >&2
         rm -rf "$temp_dir"
         return 1
