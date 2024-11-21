@@ -1,94 +1,130 @@
-# dotfiles
+# Dotfiles
 
-The goal of this repo is to be able to clone this into a debian shell and start using configured bash, tmux, and nvim. 
+This repository allows you to quickly set up a Debian shell with preconfigured Bash, Tmux, and Neovim.
 
-## GNU Stow
+## Prerequisites
 
-https://www.youtube.com/watch?v=y6XCebnB9gs
+1. Clone this repository to your home directory.
+2. Install [GNU Stow](https://www.gnu.org/software/stow/) (a symlink manager).
 
-This project utilizes GNU Stow. 
+## Using GNU Stow
 
-Clone this repo to your home directory. Download and install GNU Stow. Finally, `cd` into dotfiles and run `stow .`.
+GNU Stow simplifies the management of dotfiles. To apply the configurations:
+
+```sh
+cd ~/dotfiles
+stow .
+```
+
+This will create symlinks for all configuration files in their respective locations.
+
+### Resources
+- [Video tutorial](https://www.youtube.com/watch?v=y6XCebnB9gs)
 
 ## Submodule Workflow
 
-This repository uses [git submodules](https://git-scm.com/docs/git-submodule). This allows for keeping configs up-to-date with upstream. Watch [this video](https://www.youtube.com/watch?v=gSlXo2iLBro) to learn about them. Here are some useful commands:
+This repository uses [Git submodules](https://git-scm.com/book/en/v2/Git-Tools-Submodules) to manage and track external configurations. Submodules allow you to keep your configurations up-to-date with their upstream sources.
 
+### Useful Commands
+
+#### Initial Setup
 ```sh
-# Cloning this repo
-git clone [address] --recurse-submodule
+# Clone this repository along with its submodules
+git clone <repo-url> --recurse-submodule
 
-# If you've coloned already without the recursive flag
-# you can populate the submodules 
-git submodule update --init --recursive 
+# If cloned without the recursive flag, initialize and update submodules
+git submodule update --init --recursive
+```
 
-# Add submodule
-git submodule add -b master <repository> 
+#### Managing Submodules
+```sh
+# Add a new submodule
+git submodule add <https-repo-url>
+git config submodule.<submodule-name>.url <ssh-repo-url>  # Add an SSH URL for private use
 
 # Remove a submodule
-git rm <path-to-submodule>
+git config -f .gitmodules --remove-section "submodule.<submodule-name>"
+rm -rf <path-to-submodule>
+rm -rf .git/modules/<path-to-submodule>
 
-# Execute git command for current repo and all submodules recursively
-git pull -recurse-submodules
+# Pull updates for submodules from upstream
+git submodule update --remote [<path-to-submodule>]
 
-# Configure git to always execute submodule commands recursively
-git config submodule.recurse true
+# Merge or rebase changes in submodules
+git submodule update --remote --merge
+git submodule update --remote --rebase
 ```
-# Common git workflow after forking a repository
+
+### Git Configuration for Submodules
+```sh
+# Fail push if submodules have unpushed commits
+git config push.recurseSubmodules check
+
+# Automatically include submodules in pull and checkout commands
+git config submodule.recurse true
+
+# Show submodule changes in diffs
+git config --global diff.submodule log
+
+# Display a summary of submodule changes in `git status`
+git config status.submodulesummary 1
+```
+
+## Fork Workflow
+
+When working with a forked repository, the following commands can help manage upstream updates:
 
 ```sh
-# See remotes
+# View configured remotes
 git remote -v
 
-# Add upstream remote
-git remote add upstream <repository>
+# Add the upstream repository
+git remote add upstream <upstream-repo-url>
 
-# Merge upstream 
+# Merge changes from upstream into your branch
+git fetch upstream
 git merge upstream/<branch> <branch>
 
-# Configure git to prefer origin over upstream when executing git commands
+# Default to your fork (origin) when checking out branches
 git config checkout.defaultRemote origin
 ```
 
-## Diff/Patch Workflow
+## Diff and Patch Workflow
 
-Rather than forking a repository to customize a file and keep it up to date with upstream, we can use wget, diff, and patch.
+Use `diff` and `patch` to customize a file while staying synced with upstream changes.
 
-1. Using the browser, find the file you want to customize on Github. 
-2. Find and click the "raw" button in the file viewer. Copy the url in the address bar.
-3. Download the file.
+### Steps
+1. Locate the file on GitHub and click the "Raw" button to copy the URL.
+2. Download the file using `wget`:
+   ```sh
+   wget https://raw.githubusercontent.com/user/repo/branch/path/file.txt
+   ```
+3. Create a copy of the file and make your edits.
+4. Generate a diff file to capture the differences:
+   ```sh
+   diff -u file file-copy > file.diff
+   ```
+5. Use `patch` to apply the changes in the diff file:
+   ```sh
+   patch < file.diff
+   ```
+6. To revert the changes:
+   ```sh
+   patch -R < file.diff
+   ```
 
-```sh
-wget https://raw.githubusercontent.com/user/repo-name/branch/path/file.txt
-```
+   **Note**: If `patch` fails, it generates a `file.rej` file with the rejected changes, which must be applied manually.
 
-4. Make a copy and edit the file.
-5. Create a `diff` for the original and the edited file.
+### Additional Notes
+After running `patch`, the original file is saved as `file.orig` for backup.
 
-```sh
-diff -u file file-copy > file.diff
-```
+## Writing Bash Scripts
 
-6. Now you are able to delete your edited file, `file-copy`, and use `file.diff` to recreate it with patch. 
-Note that the original file should be in the same path as noted in the diff.
-
-```sh
-patch < file.diff
-```
-
-You can revert the changes to `file` as below:
-
-```sh
-patch -R < file.diff
-```
-
-After running `patch`, you can see the orignal file in the same directory called `file.orig`. This is the file before you applied any patches. When `patch` fails, it will output a `file.rej` file. You will have to open the file and apply the diff manually.
-
-## Bash Scripts
-
-Bash scripts will start with the following
+All Bash scripts in this repository follow this standard header:
 
 ```sh
 #!/usr/bin/env bash
-set -euo pipefail # exit on error, unset variable, or pipe fail
+set -euo pipefail  # Exit on error, unset variable, or pipe failure
 ```
+
+This ensures reliable and predictable script behavior.
