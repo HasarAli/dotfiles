@@ -72,6 +72,8 @@ install_archive() {
         printf "Installation completed successfully.\n"
     else
         printf "Error: Expected binary not found at '%s'.\n" "$package_bin_path" >&2
+        rm -rf "$install_path"
+        rm -rf "$extracted_package"
         return 1
     fi
 }
