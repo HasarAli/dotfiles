@@ -99,6 +99,10 @@ if ! shopt -oq posix; then
 	fi
 fi
 
+# Install tmux, nvim and its dependencies
+"$SCRIPTS_DIR/install_apt_packages.sh"  tmux make gcc ripgrep unzip git
+"$SCRIPTS_DIR/install_github_package.sh" nvim neovim neovim nvim-linux64.tar.gz
+
 export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"                   # This loads nvm
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion" # This loads nvm bash_completion
