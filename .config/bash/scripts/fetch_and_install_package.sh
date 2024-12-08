@@ -61,11 +61,10 @@ install_archive() {
         return 1
     }
 
-    local install_path; install_path="$INSTALL_ROOT/$extracted_package"
+    local install_path; install_path="$INSTALL_ROOT/$command_name"
     sudo rm -rf "$install_path"
-    sudo mkdir -p "$install_path"
+    sudo mv "$extracted_package" "$install_path"
     sudo chmod a+rX "$install_path"
-    sudo mv "$extracted_package" "$INSTALL_ROOT"
 
     local package_bin_path; package_bin_path="$install_path/bin/$command_name"
     if [[ -x "$package_bin_path" ]]; then
