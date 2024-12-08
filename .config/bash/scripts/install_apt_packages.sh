@@ -2,10 +2,15 @@
 set -euo pipefail
 
 install_packages() {
-    for package in "$@"
-    do
-        if !sudo apt-get install -yq "$package"; then
-            >&2 printf "Error installing %s.\n" "$package"
+    if ! sudo apt-get update -qq; then
+        printf "Error updating package lists.\n" >&2
+        return 1
+    fi
+
+    for package in "$@"; do
+        if ! sudo apt-get install -qq "$package"; then
+            printf "Error installing %s.\n" "$package" >&2
+            return 1
         fi
     done
 }
