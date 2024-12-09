@@ -118,6 +118,10 @@ Use `diff` and `patch` to customize a file while staying synced with upstream ch
 ### Additional Notes
 After running `patch`, the original file is saved as `file.orig` for backup.
 
+## tmux
+
+Press `<prefix> I` to install tmux plugins
+
 ## Writing Bash Scripts
 
 All Bash scripts in this repository follow this standard header:

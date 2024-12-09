@@ -1,2 +1,5 @@
-.config/tmux/plugins/
+.config/tmux/plugins/*
+!.config/tmux/plugins/tpm/
+!.config/tmux/plugins/tpm/**
+
 .config/bash/patched/
