@@ -4,16 +4,31 @@ This repository allows you to quickly set up a Debian shell with preconfigured B
 
 ## Prerequisites
 
-1. Clone this repository to your home directory.
+1. Clone this repository
 2. Install [GNU Stow](https://www.gnu.org/software/stow/) (a symlink manager).
 
 ## Using GNU Stow
 
 GNU Stow simplifies the management of dotfiles. To apply the configurations:
 
+First, test changes with a simulation:
 ```sh
-cd ~/dotfiles
-stow .
+stow --simulate --verbose --dotfiles --target=$HOME <path_to_this_repo>
+```
+
+If you are confident with the simulation output, run the actual command:
+```sh
+stow --dotfiles --target=$HOME <path_to_this_repo>
+```
+
+If you need to remove the symlinks later:
+```sh
+stow --delete --dotfiles --target=$HOME <path_to_this_repo>
+```
+
+If you need to restow (delete then restow):
+```sh
+stow --restow --dotfiles --target=$HOME <path_to_this_repo>
 ```
 
 This will create symlinks for all configuration files in their respective locations.
