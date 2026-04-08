@@ -2,56 +2,27 @@
 
 This repository allows you to quickly set up a Debian shell with preconfigured Bash, Tmux, and Neovim.
 
-## Prerequisites
+## Setup
 
-1. Clone this repository
-2. Install [GNU Stow](https://www.gnu.org/software/stow/) (a symlink manager).
-
-## Using GNU Stow
-
-GNU Stow simplifies the management of dotfiles. To apply the configurations:
-
-First, test changes with a simulation:
-```sh
-stow --simulate --verbose --dotfiles --target=$HOME <path_to_this_repo>
-```
-
-If you are confident with the simulation output, run the actual command:
-```sh
-stow --dotfiles --target=$HOME <path_to_this_repo>
-```
-
-If you need to remove the symlinks later:
-```sh
-stow --delete --dotfiles --target=$HOME <path_to_this_repo>
-```
-
-If you need to restow (delete then restow):
-```sh
-stow --restow --dotfiles --target=$HOME <path_to_this_repo>
-```
-
-This will create symlinks for all configuration files in their respective locations.
-
-### Resources
-- [Video tutorial](https://www.youtube.com/watch?v=y6XCebnB9gs)
+1. Clone this repository with submodules:
+   ```sh
+   git clone <repo-url> --recurse-submodule
+   ```
+2. Run the setup script:
+   ```sh
+   bash setup.sh
+   ```
+   The script provides an interactive menu to select which steps to run:
+   1. **Init submodules** — clones submodules and adds an upstream remote for the kickstart.nvim fork
+   2. **Configure git** — sets recommended git configs (submodule recursion, push safety, diff/status display, default remote)
+   3. **Stow dotfiles** — installs GNU Stow and symlinks dotfiles to `$HOME`
+   4. **Install tmux, ripgrep, neovim, git-prompt.sh, nerd font**
 
 ## Submodule Workflow
 
-This repository uses [Git submodules](https://git-scm.com/book/en/v2/Git-Tools-Submodules) to manage and track external configurations. Submodules allow you to keep your configurations up-to-date with their upstream sources.
+This repository uses [Git submodules](https://git-scm.com/book/en/v2/Git-Tools-Submodules) to manage and track external configurations.
 
-### Useful Commands
-
-#### Initial Setup
-```sh
-# Clone this repository along with its submodules
-git clone <repo-url> --recurse-submodule
-
-# If cloned without the recursive flag, initialize and update submodules
-git submodule update --init --recursive
-```
-
-#### Managing Submodules
+### Managing Submodules
 ```sh
 # Add a new submodule
 git submodule add <https-repo-url>
@@ -70,68 +41,14 @@ git submodule update --remote --merge
 git submodule update --remote --rebase
 ```
 
-### Git Configuration for Submodules
-```sh
-# Fail push if submodules have unpushed commits
-git config push.recurseSubmodules check
-
-# Automatically include submodules in pull and checkout commands
-git config submodule.recurse true
-
-# Show submodule changes in diffs
-git config --global diff.submodule log
-
-# Display a summary of submodule changes in `git status`
-git config status.submodulesummary 1
-```
-
 ## Fork Workflow
 
-When working with a forked repository, the following commands can help manage upstream updates:
+The setup script adds an upstream remote for forked submodules. To sync with upstream:
 
 ```sh
-# View configured remotes
-git remote -v
-
-# Add the upstream repository
-git remote add upstream <upstream-repo-url>
-
-# Merge changes from upstream into your branch
 git fetch upstream
 git merge upstream/<branch> <branch>
-
-# Default to your fork (origin) when checking out branches
-git config checkout.defaultRemote origin
 ```
-
-## Diff and Patch Workflow
-
-Use `diff` and `patch` to customize a file while staying synced with upstream changes.
-
-### Steps
-1. Locate the file on GitHub and click the "Raw" button to copy the URL.
-2. Download the file using `wget`:
-   ```sh
-   wget https://raw.githubusercontent.com/user/repo/branch/path/file.txt
-   ```
-3. Create a copy of the file and make your edits.
-4. Generate a diff file to capture the differences:
-   ```sh
-   diff -u file file-copy > file.diff
-   ```
-5. Use `patch` to apply the changes in the diff file:
-   ```sh
-   patch < file.diff
-   ```
-6. To revert the changes:
-   ```sh
-   patch -R < file.diff
-   ```
-
-   **Note**: If `patch` fails, it generates a `file.rej` file with the rejected changes, which must be applied manually.
-
-### Additional Notes
-After running `patch`, the original file is saved as `file.orig` for backup.
 
 ## tmux
 
