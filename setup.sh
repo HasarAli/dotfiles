@@ -1,27 +1,22 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-install_apt_packages() {
-	local packages=(tmux make gcc ripgrep unzip git curl)
+ensure_installed() {
 	local missing=()
-
-	for pkg in "${packages[@]}"; do
+	for pkg in "$@"; do
 		if ! dpkg -s "$pkg" &>/dev/null; then
 			missing+=("$pkg")
 		fi
 	done
-
-	if [[ ${#missing[@]} -eq 0 ]]; then
-		printf "All apt packages already installed.\n"
-		return 0
-	fi
-
+	[[ ${#missing[@]} -eq 0 ]] && return 0
 	printf "Installing: %s\n" "${missing[*]}"
 	sudo apt-get update -qq
 	sudo apt-get install -qq -y "${missing[@]}"
 }
 
 install_nvim() {
+	ensure_installed make gcc curl
+
 	if command -v nvim &>/dev/null; then
 		printf "nvim is already installed: %s\n" "$(nvim --version | head -1)"
 		return 0
@@ -53,6 +48,8 @@ install_nvim() {
 }
 
 install_git_prompt() {
+	ensure_installed curl git
+
 	local dest="$HOME/.config/bash/git-prompt.sh"
 	if [[ -f "$dest" ]]; then
 		printf "git-prompt.sh already installed.\n"
@@ -69,17 +66,12 @@ install_git_prompt() {
 }
 
 install_nerdfont() {
+	ensure_installed unzip
+
 	local font_name="JetBrainsMonoNerdFont"
 
 	if fc-list | grep -qi "$font_name"; then
 		printf "%s is already installed.\n" "$font_name"
-		return 0
-	fi
-
-	printf "Install %s? (y/n): " "$font_name"
-	read -r response
-	if [[ "$response" != [yY] ]]; then
-		printf "Skipped font installation.\n"
 		return 0
 	fi
 
@@ -100,10 +92,40 @@ install_nerdfont() {
 }
 
 main() {
-	install_apt_packages
-	install_nvim
-	install_git_prompt
-	install_nerdfont
+	local steps=(
+		"Install tmux"
+		"Install ripgrep"
+		"Install neovim"
+		"Install git-prompt.sh"
+		"Install nerd font"
+	)
+	local funcs=(
+		"ensure_installed tmux"
+		"ensure_installed ripgrep"
+		"install_nvim"
+		"install_git_prompt"
+		"install_nerdfont"
+	)
+
+	printf "Available steps:\n"
+	for i in "${!steps[@]}"; do
+		printf "  %d) %s\n" $((i + 1)) "${steps[i]}"
+	done
+	printf "  a) All\n\n"
+
+	read -rp "Select steps (e.g. 1 3 4, or a for all): " selection
+
+	if [[ "$selection" == "a" ]]; then
+		selection=$(seq 1 ${#steps[@]})
+	fi
+
+	for num in $selection; do
+		local idx=$((num - 1))
+		if [[ $idx -ge 0 && $idx -lt ${#funcs[@]} ]]; then
+			printf "\n--- %s ---\n" "${steps[idx]}"
+			${funcs[idx]}
+		fi
+	done
 }
 
 main
