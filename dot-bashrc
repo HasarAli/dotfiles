@@ -4,12 +4,29 @@ case $- in
 *) return ;;
 esac
 
-# source patched configs
-for patched_bash_config in "$HOME/.config/bash/patched"/*; do
-	if [[ -f "$patched_bash_config" ]]; then
-		source "$patched_bash_config"
-	fi
-done
+# general options
+set -o noclobber
+shopt -s checkwinsize
+PROMPT_DIRTRIM=2
+bind Space:magic-space
+shopt -s globstar 2> /dev/null
+
+# history
+shopt -s histappend
+shopt -s cmdhist
+PROMPT_COMMAND='history -a'
+HISTSIZE=999999999
+HISTFILESIZE=999999999
+HISTCONTROL="erasedups:ignoreboth"
+export HISTIGNORE="&:[ ]*:exit:ls:bg:fg:history:clear"
+HISTTIMEFORMAT='%F %T '
+
+# directory navigation
+shopt -s autocd 2> /dev/null
+shopt -s dirspell 2> /dev/null
+shopt -s cdspell 2> /dev/null
+CDPATH="."
+shopt -s cdable_vars
 
 # make less more friendly for non-text input files, see lesspipe(1)
 [ -x /usr/bin/lesspipe ] && eval "$(SHELL=/bin/sh lesspipe)"
@@ -17,6 +34,16 @@ done
 # set variable identifying the chroot you work in (used in the prompt below)
 if [ -z "${debian_chroot:-}" ] && [ -r /etc/debian_chroot ]; then
 	debian_chroot=$(cat /etc/debian_chroot)
+fi
+
+# git prompt
+GIT_PS1_SHOWDIRTYSTATE=1
+GIT_PS1_SHOWUNTRACKEDFILES=1
+GIT_PS1_SHOWUPSTREAM="verbose"
+GIT_PS1_SHOWCONFLICTSTATE="yes"
+GIT_PS1_SHOWCOLORHINTS=1
+if [ -f "$HOME/.config/bash/git-prompt.sh" ]; then
+	source "$HOME/.config/bash/git-prompt.sh"
 fi
 
 # enable color prompt if terminal supports it

@@ -52,6 +52,22 @@ install_nvim() {
 	printf "nvim installed: %s\n" "$(nvim --version | head -1)"
 }
 
+install_git_prompt() {
+	local dest="$HOME/.config/bash/git-prompt.sh"
+	if [[ -f "$dest" ]]; then
+		printf "git-prompt.sh already installed.\n"
+		return 0
+	fi
+
+	local url="https://raw.githubusercontent.com/git/git/refs/heads/master/contrib/completion/git-prompt.sh"
+	mkdir -p "$(dirname "$dest")"
+	if ! curl -fLo "$dest" "$url"; then
+		printf "Error: Failed to download git-prompt.sh.\n" >&2
+		return 1
+	fi
+	printf "git-prompt.sh installed.\n"
+}
+
 install_nerdfont() {
 	local font_name="JetBrainsMonoNerdFont"
 
@@ -86,6 +102,7 @@ install_nerdfont() {
 main() {
 	install_apt_packages
 	install_nvim
+	install_git_prompt
 	install_nerdfont
 }
 
