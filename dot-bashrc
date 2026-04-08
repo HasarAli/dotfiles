@@ -80,10 +80,10 @@ fi
 [ -s "$NVM_DIR/bash_completion" ] && source "$NVM_DIR/bash_completion"
 
 # open tmux if not already in a tmux session
-if command -v tmux &> /dev/null &&  
-	[[ ! "$TERM" =~ screen ]] && 
-	[[ ! "$TERM" =~ tmux ]] && 
-	[ -z "$TMUX" ] 
+if command -v tmux &> /dev/null &&
+	[[ ! "$TERM" =~ screen ]] &&
+	[[ ! "$TERM" =~ tmux ]] &&
+	[ -z "$TMUX" ]
 then
 	tmux new -As 'main'
 fi
