@@ -1,4 +1,10 @@
 #!/usr/bin/env bash
+
+if [[ "${BASH_SOURCE[0]}" != "$0" ]]; then
+	printf "Error: This script must be run, not sourced. Use: bash %s\n" "${BASH_SOURCE[0]}" >&2
+	return 1
+fi
+
 set -euo pipefail
 
 ensure_installed() {
@@ -65,6 +71,52 @@ install_git_prompt() {
 	printf "git-prompt.sh installed.\n"
 }
 
+init_submodules() {
+	ensure_installed git
+
+	local repo_dir
+	repo_dir=$(cd "$(dirname "$0")" && pwd)
+
+	printf "Initializing submodules...\n"
+	git -C "$repo_dir" submodule update --init --recursive
+
+	local nvim_dir="$repo_dir/dot-config/nvim"
+	local upstream="https://github.com/nvim-lua/kickstart.nvim.git"
+	if [[ -e "$nvim_dir/.git" ]] && ! git -C "$nvim_dir" remote get-url upstream &>/dev/null; then
+		printf "Adding upstream remote for kickstart.nvim...\n"
+		git -C "$nvim_dir" remote add upstream "$upstream"
+	fi
+
+	printf "Submodules initialized.\n"
+}
+
+configure_git() {
+	ensure_installed git
+
+	local repo_dir
+	repo_dir=$(cd "$(dirname "$0")" && pwd)
+
+	printf "Configuring git settings...\n"
+	git -C "$repo_dir" config push.recurseSubmodules check
+	git -C "$repo_dir" config submodule.recurse true
+	git -C "$repo_dir" config diff.submodule log
+	git -C "$repo_dir" config status.submodulesummary 1
+	git -C "$repo_dir" config checkout.defaultRemote origin
+	git -C "$repo_dir" config core.hooksPath hooks
+	printf "Git configured.\n"
+}
+
+stow_dotfiles() {
+	ensure_installed stow
+
+	local repo_dir
+	repo_dir=$(cd "$(dirname "$0")" && pwd)
+
+	printf "Stowing dotfiles...\n"
+	stow --dotfiles --target="$HOME" --dir="$(dirname "$repo_dir")" "$(basename "$repo_dir")"
+	printf "Dotfiles stowed.\n"
+}
+
 install_nerdfont() {
 	ensure_installed unzip
 
@@ -93,6 +145,9 @@ install_nerdfont() {
 
 main() {
 	local steps=(
+		"Init submodules"
+		"Configure git"
+		"Stow dotfiles"
 		"Install tmux"
 		"Install ripgrep"
 		"Install neovim"
@@ -100,6 +155,9 @@ main() {
 		"Install nerd font"
 	)
 	local funcs=(
+		"init_submodules"
+		"configure_git"
+		"stow_dotfiles"
 		"ensure_installed tmux"
 		"ensure_installed ripgrep"
 		"install_nvim"
