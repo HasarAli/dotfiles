@@ -37,6 +37,7 @@ alias gl='git log --oneline --graph'
 alias gs='git status'
 alias ga='git add'
 alias gaa='git add --all'
+alias gap='git add --patch'
 alias gc='git commit'
 alias gcm='git commit -m'
 alias gca='git commit --amend'
@@ -62,3 +63,6 @@ alias gfa='git fetch --all'
 
 # rainbow color bar
 alias rainbow='awk '\''BEGIN{ for (colnum=0; colnum<77; colnum++) { r=255-(colnum*255/76); g=(colnum*510/76); b=(colnum*255/76); if (g>255) g=510-g; printf "\033[48;2;%d;%d;%dm ", r,g,b; } printf "\033[0m\n"; }'\'''
+
+# nerd fonts test
+alias test-nerdfont='curl https://raw.githubusercontent.com/ryanoasis/nerd-fonts/master/bin/scripts/test-fonts.sh | bash'

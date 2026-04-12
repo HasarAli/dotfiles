@@ -9,7 +9,7 @@ set -o noclobber
 shopt -s checkwinsize
 PROMPT_DIRTRIM=2
 bind Space:magic-space
-shopt -s globstar 2> /dev/null
+shopt -s globstar 2>/dev/null
 
 # history
 shopt -s histappend
@@ -22,9 +22,9 @@ export HISTIGNORE="&:[ ]*:exit:ls:bg:fg:history:clear"
 HISTTIMEFORMAT='%F %T '
 
 # directory navigation
-shopt -s autocd 2> /dev/null
-shopt -s dirspell 2> /dev/null
-shopt -s cdspell 2> /dev/null
+shopt -s autocd 2>/dev/null
+shopt -s dirspell 2>/dev/null
+shopt -s cdspell 2>/dev/null
 CDPATH="."
 shopt -s cdable_vars
 
@@ -80,10 +80,9 @@ fi
 [ -s "$NVM_DIR/bash_completion" ] && source "$NVM_DIR/bash_completion"
 
 # open tmux if not already in a tmux session
-if command -v tmux &> /dev/null &&
+if command -v tmux &>/dev/null &&
 	[[ ! "$TERM" =~ screen ]] &&
 	[[ ! "$TERM" =~ tmux ]] &&
-	[ -z "$TMUX" ]
-then
+	[ -z "$TMUX" ]; then
 	tmux new -As 'main'
 fi
