@@ -18,6 +18,20 @@ vim.g.have_nerd_font = false
 vim.o.number = true
 vim.o.mouse = 'a'
 vim.o.showmode = false
+-- OSC 52 clipboard: emits an escape sequence to the terminal instead of
+-- shelling out to xclip/xsel. Works over SSH/ttyd with no X server.
+-- Paste falls back to the unnamed register since most terminals block OSC 52 reads.
+vim.g.clipboard = {
+  name = 'OSC 52',
+  copy = {
+    ['+'] = require('vim.ui.clipboard.osc52').copy '+',
+    ['*'] = require('vim.ui.clipboard.osc52').copy '*',
+  },
+  paste = {
+    ['+'] = function() return { vim.fn.split(vim.fn.getreg '', '\n'), vim.fn.getregtype '' } end,
+    ['*'] = function() return { vim.fn.split(vim.fn.getreg '', '\n'), vim.fn.getregtype '' } end,
+  },
+}
 vim.schedule(function() vim.o.clipboard = 'unnamedplus' end)
 vim.o.breakindent = true
 vim.o.undofile = true
