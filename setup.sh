@@ -213,7 +213,7 @@ init_submodules() {
 	repo_dir=$(cd "$(dirname "$0")" && pwd)
 
 	printf "Initializing submodules...\n"
-	git -C "$repo_dir" submodule update --init --recursive
+	git -C "$repo_dir" submodule update --init
 	printf "Submodules initialized.\n"
 }
 
