@@ -1,14 +1,6 @@
 # Dotfiles
 
-Debian shell setup with preconfigured Bash, Tmux, and Neovim.
-
-## What's Included
-
-| Component | Key features |
-|-----------|-------------|
-| **Bash** | Git-aware prompt, persistent unlimited history, `autocd`, git aliases (`gl`, `gs`, `gd`, ...) |
-| **Tmux** | Prefix `C-Space`, mouse support, vim-style pane nav, OSC 52 clipboard (works over SSH), catppuccin theme |
-| **Neovim** | Vendored [kickstart.nvim](https://github.com/nvim-lua/kickstart.nvim) tailored for TS/JS + Python (LSP via Mason, Telescope, Treesitter, blink.cmp, neo-tree, gitsigns) |
+Bash, Tmux, Neovim, ttyd tuned for devpods. One command to install.
 
 ## Setup
 
@@ -17,55 +9,98 @@ git clone <repo-url>
 bash setup.sh
 ```
 
-The script has an interactive menu. Steps:
+Run setup then launch tmux and press `<prefix> I` once to install tmux plugins.
 
-1. **Configure git** — sets `checkout.defaultRemote=origin` and `core.hooksPath=hooks`
-2. **Stow dotfiles** — symlinks dotfiles to `$HOME` via GNU Stow
-3. **Install tmux**
-4. **Install tpm** — clones [tpm](https://github.com/tmux-plugins/tpm) to `~/.config/tmux/plugins/tpm`
-5. **Install neovim** — downloads nvim + `ripgrep`, `fd`, `tree-sitter` from GitHub releases (cached under `~/.cache/dotfiles-setup`)
-6. **Install git-prompt.sh**
-7. **Install nerd font** — JetBrainsMono
+## Tmux
 
-After setup, inside tmux press `<prefix> I` to install tmux plugins.
+Catppuccin Mocha statusline matching the ttyd terminal theme. Prefix is `C-Space` — thumb + pinky, no hand travel.
 
-## Tmux Keybindings
+- Bash auto-attaches to a session called `main` on login, so new ttyd tabs drop back into the same layout.
+- Mouse-select or `y` in copy-mode emits OSC 52 — text flows straight into your laptop clipboard.
+- Mouse on: click to focus a pane, drag borders to resize panes.
+- `tmux-sensible` handles ergonomics: 0ms escape time (no lag on `Esc` in nvim), 50k-line scrollback, focus events forwarded to nvim, smarter resize with multiple clients.
 
-| Key | Action |
-|-----|--------|
-| `C-Space` | Prefix |
-| `<prefix> h/j/k/l` | Select pane (vim-style) |
-| `Alt-Arrow` | Select pane (no prefix) |
-| `Shift-Left/Right` | Previous/next window |
-| `Shift-Alt-H/L` | Previous/next window (vim-style) |
-| `<prefix> J` | Join pane from another window |
-| `<prefix> o` | Send current pane to another window |
-| `<prefix> "` / `<prefix> %` | Split in current directory |
-| `<prefix> c` | New window in current directory |
-| `<prefix> I` | Install plugins (tpm) |
+### Navigation
 
-## Neovim Quick Reference
+| Key                             | Action                                                    |
+| ------------------------------- | --------------------------------------------------------- |
+| `C-h/j/k/l`                     | Move between panes (seamless with nvim splits, no prefix) |
+| `<prefix> h` / `<prefix> l`     | Previous/next window                                      |
+| `Shift-Left/Right`              | Previous/next window                                      |
+| `<prefix> Space`                | Toggle last window                                        |
+| `<prefix> C-n` / `<prefix> C-p` | Next/prev window (alternate)                              |
 
-See `dot-config/nvim/init.lua` top of file for the full reference block.
+### Panes & windows
 
-| Command | Purpose |
-|---------|---------|
-| `:Tutor` | Interactive vim basics |
-| `:help <topic>` | Builtin docs |
-| `:checkhealth` | Diagnose config/plugin issues |
-| `:Lazy` | Plugin manager UI |
-| `:Mason` | LSP/tool installer UI |
-| `:ConformInfo` | Formatter status for current buffer |
-| `<leader>sh` | Telescope: fuzzy search help tags |
-| `<leader>sk` | Telescope: list all keymaps |
+| Key                         | Action                                        |
+| --------------------------- | --------------------------------------------- |
+| `<prefix> "` / `<prefix> %` | Split pane (opens in current directory)       |
+| `<prefix> c`                | New window (in current directory)             |
+| `<prefix> o`                | Send current pane to another window           |
+| `<prefix> J`                | Pull a pane from another window into this one |
+| `<prefix> I`                | Install tmux plugins                          |
+| `<prefix> R`                | Reload `tmux.conf`                            |
 
-Leader key is `<Space>`. See [kickstart-modular README](https://github.com/nvim-lua/kickstart.nvim) for the original upstream config.
+## Bash
 
-## Writing Bash Scripts
+### Prompt
 
-All Bash scripts in this repository follow this standard header:
+Colored, compact, and loaded with signal. Path is trimmed to the last three components; branch and repo state appear inline in yellow.
 
-```sh
-#!/usr/bin/env bash
-set -euo pipefail  # Exit on error, unset variable, or pipe failure
 ```
+.../web/my/pages (main *+)$
+```
+
+Status glyphs: `*` unstaged, `+` staged, `%` untracked, `|MERGING`/`|REBASE` mid-op, `u=` in sync with upstream, `u+N-M` N ahead / M behind.
+
+### Prefix-filtered history
+
+Type the start of a command, press `Up` — you walk only the history entries starting with that prefix. Matches are deduped, so you never page through the same command twice.
+
+```
+$ git s<Up>       →  git stash pop
+       <Up>       →  git status
+       <Up>       →  git stash
+```
+
+`Down` walks the other way. `Ctrl-R` is still there for fuzzy anywhere-in-line.
+
+History is unlimited, written after every command, and shared: new shells see what you typed in other sessions.
+
+### Navigation
+
+```
+~/proj$ src                       # autocd — no `cd` needed
+~/proj$ cd ~/prj                  # typo fixed (cdspell) → ~/proj
+~/proj$ ls **/*.py                # globstar recurses
+```
+
+### Smart completion
+
+- Case-insensitive (`cd /USR/local` tabs to `/usr/local`).
+- `-` and `_` are interchangeable (`my_app<Tab>` completes `my-app`).
+- Ambiguous matches show on the first tab press, not the second.
+
+### Tooling swaps
+
+`grep` → `rg`, `find` → `fd`, `vi`/`vim` → `nvim`, when installed.
+
+### Git aliases
+
+Full list in `dot-bash_aliases`. Most-used:
+
+| Alias                         | Runs                                            |
+| ----------------------------- | ----------------------------------------------- |
+| `gs`                          | `git status`                                    |
+| `gl`                          | `git log --oneline --graph`                     |
+| `gd` / `gds`                  | `git diff` / `git diff --staged`                |
+| `ga` / `gaa` / `gap`          | `add` / `add --all` / `add --patch`             |
+| `gc` / `gcm` / `gca` / `gcan` | commit / `-m` / `--amend` / `--amend --no-edit` |
+| `gco` / `gcb`                 | `checkout` / `checkout -b`                      |
+| `gp` / `gpf` / `gpl`          | `push` / `push --force-with-lease` / `pull`     |
+| `gst` / `gstp` / `gstl`       | `stash` / `stash pop` / `stash list`            |
+| `gr` / `gri`                  | `rebase` / `rebase -i`                          |
+| `grh` / `grhh`                | `reset HEAD` / `reset --hard HEAD`              |
+| `gf` / `gfa`                  | `fetch` / `fetch --all`                         |
+
+On login, bash auto-attaches to a tmux session named `main`.
