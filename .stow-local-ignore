@@ -1,9 +1,7 @@
 # Comments and blank lines are allowed.
 \.git
 \.gitignore
-\.gitmodules
 
+^/\.claude
 ^/README.*
-^/LICENSE.*
-^/hooks
 ^/setup\.sh

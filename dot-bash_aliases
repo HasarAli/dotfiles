@@ -27,6 +27,10 @@ if command -v rg &>/dev/null; then
 	alias grep='rg'
 fi
 
+if command -v fd &>/dev/null; then
+	alias find='fd'
+fi
+
 if command -v nvim &>/dev/null; then
 	alias vi='nvim'
 	alias vim='nvim'

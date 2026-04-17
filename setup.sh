@@ -214,7 +214,6 @@ configure_git() {
 
 	printf "Configuring git settings...\n"
 	git -C "$repo_dir" config checkout.defaultRemote origin
-	git -C "$repo_dir" config core.hooksPath hooks
 	printf "Git configured.\n"
 }
 
@@ -229,8 +228,8 @@ stow_dotfiles() {
 	printf "Dotfiles stowed.\n"
 }
 
-install_tpm() {
-	ensure_installed git
+install_tmux() {
+	ensure_installed tmux git
 
 	local dest="$HOME/.config/tmux/plugins/tpm"
 	if [[ -d "$dest/.git" ]]; then
@@ -243,61 +242,52 @@ install_tpm() {
 	printf "tpm installed. Inside tmux, press prefix + I to install plugins.\n"
 }
 
-install_nerdfont() {
-	ensure_installed unzip
-
-	local font_name="JetBrainsMonoNerdFont"
-
-	if fc-list | grep -qi "$font_name"; then
-		printf "%s is already installed.\n" "$font_name"
-		return 0
-	fi
-
-	local font_dir="$HOME/.local/share/fonts"
-	local font_url="https://github.com/ryanoasis/nerd-fonts/releases/download/v3.0.2/JetBrainsMono.zip"
-	local font_zip="$font_dir/JetBrainsMono.zip"
-
-	mkdir -p "$font_dir"
-	if ! wget -q -P "$font_dir" "$font_url"; then
-		printf "Error: Failed to download %s.\n" "$font_name" >&2
-		return 1
-	fi
-
-	unzip -oq "$font_zip" -d "$font_dir"
-	rm -f "$font_zip"
-	fc-cache -f
-	printf "%s installed.\n" "$font_name"
-}
-
 main() {
 	local steps=(
-		"Configure git"
+		"Configure git for this repo"
 		"Stow dotfiles"
-		"Install tmux"
-		"Install tpm"
+		"Install tmux + tpm"
 		"Install neovim"
 		"Install git-prompt.sh"
-		"Install nerd font"
 	)
 	local funcs=(
 		"configure_git"
 		"stow_dotfiles"
-		"ensure_installed tmux"
-		"install_tpm"
+		"install_tmux"
 		"install_nvim"
 		"install_git_prompt"
-		"install_nerdfont"
 	)
 
-	printf "Available steps:\n"
-	for i in "${!steps[@]}"; do
-		printf "  %d) %s\n" $((i + 1)) "${steps[i]}"
+	local interactive=0
+	for arg in "$@"; do
+		case "$arg" in
+			-i|--interactive) interactive=1 ;;
+			-h|--help)
+				printf "Usage: %s [-i|--interactive]\n" "$0"
+				printf "  Default: run all steps.\n"
+				printf "  -i, --interactive: pick steps from a menu.\n"
+				return 0
+				;;
+			*)
+				printf "Unknown option: %s\n" "$arg" >&2
+				return 1
+				;;
+		esac
 	done
-	printf "  a) All\n\n"
 
-	read -rp "Select steps (e.g. 1 3 4, or a for all): " selection
+	local selection
+	if [[ $interactive -eq 1 ]]; then
+		printf "Available steps:\n"
+		for i in "${!steps[@]}"; do
+			printf "  %d) %s\n" $((i + 1)) "${steps[i]}"
+		done
+		printf "  a) All\n\n"
 
-	if [[ "$selection" == "a" ]]; then
+		read -rp "Select steps (e.g. 1 3 4, or a for all): " selection
+		if [[ "$selection" == "a" ]]; then
+			selection=$(seq 1 ${#steps[@]})
+		fi
+	else
 		selection=$(seq 1 ${#steps[@]})
 	fi
 
@@ -310,4 +300,4 @@ main() {
 	done
 }
 
-main
+main "$@"
