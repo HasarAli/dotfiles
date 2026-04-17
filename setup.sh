@@ -79,14 +79,6 @@ init_submodules() {
 
 	printf "Initializing submodules...\n"
 	git -C "$repo_dir" submodule update --init --recursive
-
-	local nvim_dir="$repo_dir/dot-config/nvim"
-	local upstream="https://github.com/nvim-lua/kickstart.nvim.git"
-	if [[ -e "$nvim_dir/.git" ]] && ! git -C "$nvim_dir" remote get-url upstream &>/dev/null; then
-		printf "Adding upstream remote for kickstart.nvim...\n"
-		git -C "$nvim_dir" remote add upstream "$upstream"
-	fi
-
 	printf "Submodules initialized.\n"
 }
 
