@@ -206,17 +206,6 @@ install_git_prompt() {
 	printf "git-prompt.sh installed.\n"
 }
 
-init_submodules() {
-	ensure_installed git
-
-	local repo_dir
-	repo_dir=$(cd "$(dirname "$0")" && pwd)
-
-	printf "Initializing submodules...\n"
-	git -C "$repo_dir" submodule update --init
-	printf "Submodules initialized.\n"
-}
-
 configure_git() {
 	ensure_installed git
 
@@ -224,10 +213,6 @@ configure_git() {
 	repo_dir=$(cd "$(dirname "$0")" && pwd)
 
 	printf "Configuring git settings...\n"
-	git -C "$repo_dir" config push.recurseSubmodules check
-	git -C "$repo_dir" config submodule.recurse true
-	git -C "$repo_dir" config diff.submodule log
-	git -C "$repo_dir" config status.submodulesummary 1
 	git -C "$repo_dir" config checkout.defaultRemote origin
 	git -C "$repo_dir" config core.hooksPath hooks
 	printf "Git configured.\n"
@@ -242,6 +227,20 @@ stow_dotfiles() {
 	printf "Stowing dotfiles...\n"
 	stow --dotfiles --target="$HOME" --dir="$(dirname "$repo_dir")" "$(basename "$repo_dir")"
 	printf "Dotfiles stowed.\n"
+}
+
+install_tpm() {
+	ensure_installed git
+
+	local dest="$HOME/.config/tmux/plugins/tpm"
+	if [[ -d "$dest/.git" ]]; then
+		printf "tpm already installed.\n"
+		return 0
+	fi
+
+	mkdir -p "$(dirname "$dest")"
+	git clone --depth 1 https://github.com/tmux-plugins/tpm "$dest"
+	printf "tpm installed. Inside tmux, press prefix + I to install plugins.\n"
 }
 
 install_nerdfont() {
@@ -272,19 +271,19 @@ install_nerdfont() {
 
 main() {
 	local steps=(
-		"Init submodules"
 		"Configure git"
 		"Stow dotfiles"
 		"Install tmux"
+		"Install tpm"
 		"Install neovim"
 		"Install git-prompt.sh"
 		"Install nerd font"
 	)
 	local funcs=(
-		"init_submodules"
 		"configure_git"
 		"stow_dotfiles"
 		"ensure_installed tmux"
+		"install_tpm"
 		"install_nvim"
 		"install_git_prompt"
 		"install_nerdfont"
