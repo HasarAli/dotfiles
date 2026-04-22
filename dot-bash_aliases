@@ -65,8 +65,25 @@ alias grhh='git reset --hard HEAD'
 alias gf='git fetch'
 alias gfa='git fetch --all'
 
-# rainbow color bar
-alias rainbow='awk '\''BEGIN{ for (colnum=0; colnum<77; colnum++) { r=255-(colnum*255/76); g=(colnum*510/76); b=(colnum*255/76); if (g>255) g=510-g; printf "\033[48;2;%d;%d;%dm ", r,g,b; } printf "\033[0m\n"; }'\'''
-
 # nerd fonts test
 alias test-nerdfont='curl https://raw.githubusercontent.com/ryanoasis/nerd-fonts/master/bin/scripts/test-fonts.sh | bash'
+
+# terminal color / truecolor diagnostic
+test-color() {
+	echo "TERM=$TERM"
+	echo "COLORTERM=$COLORTERM"
+	echo "tput colors=$(tput colors)"
+	awk 'BEGIN{
+	    s="/\\/\\/\\/\\/\\"; s=s s s s s s s s;
+	    for (colnum = 0; colnum<77; colnum++) {
+	        r = 255-(colnum*255/76);
+	        g = (colnum*510/76);
+	        b = (colnum*255/76);
+	        if (g>255) g = 510-g;
+	        printf "\033[48;2;%d;%d;%dm", r,g,b;
+	        printf "\033[38;2;%d;%d;%dm", 255-r,255-g,255-b;
+	        printf "%s\033[0m", substr(s,colnum+1,1);
+	    }
+	    printf "\n";
+	}'
+}
