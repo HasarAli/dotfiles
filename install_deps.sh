@@ -188,28 +188,6 @@ install_nvim() {
 	printf "nvim installed: %s\n" "$(nvim --version | head -1)"
 }
 
-configure_git() {
-	ensure_installed git
-
-	local repo_dir
-	repo_dir=$(cd "$(dirname "$0")" && pwd)
-
-	printf "Configuring git settings...\n"
-	git -C "$repo_dir" config checkout.defaultRemote origin
-	printf "Git configured.\n"
-}
-
-stow_dotfiles() {
-	ensure_installed stow
-
-	local repo_dir
-	repo_dir=$(cd "$(dirname "$0")" && pwd)
-
-	printf "Stowing dotfiles...\n"
-	stow --dotfiles --target="$HOME" --dir="$(dirname "$repo_dir")" "$(basename "$repo_dir")"
-	printf "Dotfiles stowed.\n"
-}
-
 install_tmux() {
 	ensure_installed tmux git
 
@@ -224,60 +202,6 @@ install_tmux() {
 	printf "tpm installed. Inside tmux, press prefix + I to install plugins.\n"
 }
 
-main() {
-	local steps=(
-		"Configure git for this repo"
-		"Stow dotfiles"
-		"Install tmux + tpm"
-		"Install neovim"
-	)
-	local funcs=(
-		"configure_git"
-		"stow_dotfiles"
-		"install_tmux"
-		"install_nvim"
-	)
-
-	local interactive=0
-	for arg in "$@"; do
-		case "$arg" in
-			-i|--interactive) interactive=1 ;;
-			-h|--help)
-				printf "Usage: %s [-i|--interactive]\n" "$0"
-				printf "  Default: run all steps.\n"
-				printf "  -i, --interactive: pick steps from a menu.\n"
-				return 0
-				;;
-			*)
-				printf "Unknown option: %s\n" "$arg" >&2
-				return 1
-				;;
-		esac
-	done
-
-	local selection
-	if [[ $interactive -eq 1 ]]; then
-		printf "Available steps:\n"
-		for i in "${!steps[@]}"; do
-			printf "  %d) %s\n" $((i + 1)) "${steps[i]}"
-		done
-		printf "  a) All\n\n"
-
-		read -rp "Select steps (e.g. 1 3 4, or a for all): " selection
-		if [[ "$selection" == "a" ]]; then
-			selection=$(seq 1 ${#steps[@]})
-		fi
-	else
-		selection=$(seq 1 ${#steps[@]})
-	fi
-
-	for num in $selection; do
-		local idx=$((num - 1))
-		if [[ $idx -ge 0 && $idx -lt ${#funcs[@]} ]]; then
-			printf "\n--- %s ---\n" "${steps[idx]}"
-			${funcs[idx]}
-		fi
-	done
-}
-
-main "$@"
+ensure_installed stow bash-completion git
+install_tmux
+install_nvim
