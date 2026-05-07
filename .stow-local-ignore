@@ -4,4 +4,4 @@
 
 ^/\.claude
 ^/README.*
-^/setup\.sh
+^/install_deps\.sh
