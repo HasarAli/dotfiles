@@ -188,24 +188,6 @@ install_nvim() {
 	printf "nvim installed: %s\n" "$(nvim --version | head -1)"
 }
 
-install_git_prompt() {
-	ensure_installed curl git
-
-	local dest="$HOME/.config/bash/git-prompt.sh"
-	if [[ -f "$dest" ]]; then
-		printf "git-prompt.sh already installed.\n"
-		return 0
-	fi
-
-	local url="https://raw.githubusercontent.com/git/git/refs/heads/master/contrib/completion/git-prompt.sh"
-	mkdir -p "$(dirname "$dest")"
-	if ! curl -fLo "$dest" "$url"; then
-		printf "Error: Failed to download git-prompt.sh.\n" >&2
-		return 1
-	fi
-	printf "git-prompt.sh installed.\n"
-}
-
 configure_git() {
 	ensure_installed git
 
@@ -248,14 +230,12 @@ main() {
 		"Stow dotfiles"
 		"Install tmux + tpm"
 		"Install neovim"
-		"Install git-prompt.sh"
 	)
 	local funcs=(
 		"configure_git"
 		"stow_dotfiles"
 		"install_tmux"
 		"install_nvim"
-		"install_git_prompt"
 	)
 
 	local interactive=0

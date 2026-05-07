@@ -36,16 +36,6 @@ if [ -z "${debian_chroot:-}" ] && [ -r /etc/debian_chroot ]; then
 	debian_chroot=$(cat /etc/debian_chroot)
 fi
 
-# git prompt
-GIT_PS1_SHOWDIRTYSTATE=1
-GIT_PS1_SHOWUNTRACKEDFILES=1
-GIT_PS1_SHOWUPSTREAM="verbose"
-GIT_PS1_SHOWCONFLICTSTATE="yes"
-GIT_PS1_SHOWCOLORHINTS=1
-if [ -f "$HOME/.config/bash/git-prompt.sh" ]; then
-	source "$HOME/.config/bash/git-prompt.sh"
-fi
-
 # enable color prompt if terminal supports it
 if [ -x /usr/bin/tput ] && tput setaf 1 >&/dev/null; then
 	PS1='${debian_chroot:+($debian_chroot)}\[\033[01;34m\]\w\[\033[33m\]$(__git_ps1 " (%s)")\[\033[00m\]\$ '
@@ -66,7 +56,12 @@ if [ -f ~/.bash_aliases ]; then
 	. ~/.bash_aliases
 fi
 
-# enable programmable completion features
+# source bash-completion (provides __git_ps1 used by PS1); GIT_PS1_* tunes its output
+GIT_PS1_SHOWDIRTYSTATE=1
+GIT_PS1_SHOWUNTRACKEDFILES=1
+GIT_PS1_SHOWUPSTREAM="verbose"
+GIT_PS1_SHOWCONFLICTSTATE="yes"
+GIT_PS1_SHOWCOLORHINTS=1
 if ! shopt -oq posix; then
 	if [ -f /usr/share/bash-completion/bash_completion ]; then
 		. /usr/share/bash-completion/bash_completion
