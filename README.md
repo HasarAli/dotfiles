@@ -6,8 +6,8 @@ Bash, Tmux, Neovim, ttyd tuned for devpods. One command to install.
 
 ```sh
 git clone <repo-url> dotfiles
-stow -v --dotfiles -t $HOME -d <path to dotfiles> .
 bash dotfiles/install_deps.sh
+stow -v --dotfiles -t $HOME -d <path to dotfiles> .
 ```
 
 Then launch tmux and press `<prefix> I` once to install tmux plugins.

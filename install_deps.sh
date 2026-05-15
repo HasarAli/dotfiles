@@ -188,6 +188,38 @@ install_nvim() {
 	printf "nvim installed: %s\n" "$(nvim --version | head -1)"
 }
 
+install_stow() {
+	if command -v stow &>/dev/null; then
+		local v
+		v=$(stow --version 2>/dev/null | grep -oE '[0-9]+\.[0-9]+(\.[0-9]+)?' | head -1)
+		if [[ -n "$v" ]] && dpkg --compare-versions "$v" ge 2.4.1; then
+			printf "stow is already installed: %s\n" "$(stow --version | head -1)"
+			return 0
+		fi
+		printf "stow %s lacks --dotfiles directory support (needs >= 2.4.1). Building from source.\n" "$v"
+	fi
+
+	ensure_installed curl make perl
+
+	local tag="2.4.1"
+	local dir="stow-${tag}"
+	local cached="$CACHE_DIR/${dir}"
+
+	if [[ ! -f "${cached}/configure" ]]; then
+		local tarball="${dir}.tar.gz"
+		local url="https://ftp.gnu.org/gnu/stow/${tarball}"
+		download_to_tmp "$tarball" "$url" || return 1
+		mkdir -p "$CACHE_DIR"
+		tar -C "$CACHE_DIR" -xzf "/tmp/${tarball}"
+		rm -f "/tmp/${tarball}"
+	else
+		printf "Using cached %s.\n" "$dir"
+	fi
+
+	(cd "$cached" && ./configure --prefix=/usr/local && make && sudo make install)
+	printf "stow installed: %s\n" "$(stow --version | head -1)"
+}
+
 install_tmux() {
 	ensure_installed tmux git
 
@@ -202,6 +234,7 @@ install_tmux() {
 	printf "tpm installed. Inside tmux, press prefix + I to install plugins.\n"
 }
 
-ensure_installed stow bash-completion git
+ensure_installed bash-completion git
+install_stow
 install_tmux
 install_nvim
