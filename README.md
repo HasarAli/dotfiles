@@ -4,13 +4,18 @@ Bash, Tmux, Neovim, ttyd tuned for devpods. One command to install.
 
 ## Setup
 
+Requires **Debian or Ubuntu** (the install script uses `apt-get`).
+
 ```sh
 git clone <repo-url> dotfiles
-bash dotfiles/install_deps.sh
+sudo bash dotfiles/install_deps.sh
 stow -v --dotfiles -t $HOME -d <path to dotfiles> .
+git clone --depth 1 https://github.com/tmux-plugins/tpm ~/.config/tmux/plugins/tpm
 ```
 
 Then launch tmux and press `<prefix> I` once to install tmux plugins.
+
+`install_deps.sh` must run as root. TPM is cloned into your home after stow so `tmux.conf` can load it from `~/.config/tmux/plugins/tpm` (see the `run` line at the bottom of `dot-config/tmux/tmux.conf`).
 
 ## Tmux
 
