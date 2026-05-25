@@ -1,0 +1,3 @@
+# Exclude everything by default, then whitelist only what the Dockerfile needs.
+**
+!entrypoint.sh
