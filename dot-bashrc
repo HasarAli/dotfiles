@@ -1,83 +1,75 @@
-# if not running interactively, don't do anything
 case $- in
-*i*) ;;
-*) return ;;
+    *i*) ;;
+    *) return ;;
 esac
 
-# general options
-set -o noclobber
-shopt -s checkwinsize
-PROMPT_DIRTRIM=3
-bind Space:magic-space
-shopt -s globstar 2>/dev/null
-
-# history
-shopt -s histappend
-shopt -s cmdhist
-PROMPT_COMMAND='history -a'
-HISTSIZE=999999999
-HISTFILESIZE=999999999
-HISTCONTROL="erasedups:ignoreboth"
-export HISTIGNORE="&:[ ]*:exit:ls:bg:fg:history:clear"
-HISTTIMEFORMAT='%F %T '
-
-# directory navigation
-shopt -s autocd 2>/dev/null
-shopt -s dirspell 2>/dev/null
-shopt -s cdspell 2>/dev/null
-CDPATH="."
-shopt -s cdable_vars
-
-# make less more friendly for non-text input files, see lesspipe(1)
-[ -x /usr/bin/lesspipe ] && eval "$(SHELL=/bin/sh lesspipe)"
-
-# set variable identifying the chroot you work in (used in the prompt below)
-if [ -z "${debian_chroot:-}" ] && [ -r /etc/debian_chroot ]; then
-	debian_chroot=$(cat /etc/debian_chroot)
-fi
-
-# enable color prompt if terminal supports it
-if [ -x /usr/bin/tput ] && tput setaf 1 >&/dev/null; then
-	PS1='${debian_chroot:+($debian_chroot)}\[\033[01;34m\]\w\[\033[33m\]$(__git_ps1 " (%s)")\[\033[00m\]\$ '
+# GNU Coreutils path alignment for color support
+if command -v dircolors &>/dev/null; then
+    eval "$(dircolors -b)"
+    alias ls='ls --color=auto'
+elif command -v gls &>/dev/null; then
+    alias ls='gls --color=auto'
 else
-	PS1='\w$(__git_ps1 " (%s)")\$ '
+    alias ls='ls -G'
 fi
 
-# if this is an xterm set the title to user@host
-case "$TERM" in
-xterm* | rxvt*)
-	PS1="\[\e]0;${debian_chroot:+($debian_chroot)}\u@\h\a\]$PS1"
-	;;
-*) ;;
-esac
+# Shell options and history
+set -o noclobber
+shopt -s checkwinsize histappend cmdhist globstar autocd dirspell cdspell cdable_vars 2>/dev/null
 
-# alias definitions
-if [ -f ~/.bash_aliases ]; then
-	. ~/.bash_aliases
-fi
+PROMPT_DIRTRIM=3
+CDPATH="."
+bind Space:magic-space
 
-# source bash-completion (provides __git_ps1 used by PS1); GIT_PS1_* tunes its output
+HISTSIZE=999999
+HISTFILESIZE=999999
+HISTCONTROL="erasedups:ignoreboth"
+HISTTIMEFORMAT='%F %T '
+export HISTIGNORE="&:[ ]*:exit:ls:bg:fg:history:clear"
+PROMPT_COMMAND='history -a'
+
+# Git prompt and completion
+GIT_PROMPT_PATHS=(
+    "/opt/homebrew/etc/bash_completion.d/git-prompt.sh"
+    "/usr/lib/git-core/git-sh-prompt"
+    "/usr/share/git-core/git-prompt.sh"
+    "/Library/Developer/CommandLineTools/usr/share/git-core/git-prompt.sh"
+)
+
+for path in "${GIT_PROMPT_PATHS[@]}"; do
+    if [ -f "$path" ]; then
+        . "$path"
+        break
+    fi
+done
+
 GIT_PS1_SHOWDIRTYSTATE=1
 GIT_PS1_SHOWUNTRACKEDFILES=1
 GIT_PS1_SHOWUPSTREAM="verbose"
 GIT_PS1_SHOWCONFLICTSTATE="yes"
-GIT_PS1_SHOWCOLORHINTS=1
-if ! shopt -oq posix; then
-	if [ -f /usr/share/bash-completion/bash_completion ]; then
-		. /usr/share/bash-completion/bash_completion
-	elif [ -f /etc/bash_completion ]; then
-		. /etc/bash_completion
-	fi
+
+if command -v __git_ps1 &>/dev/null; then
+    PS1='\[\033[01;34m\]\w\[\033[33m\]$(__git_ps1 " (%s)")\[\033[00m\]\$ '
+else
+    PS1='\[\033[01;34m\]\w\[\033[00m\]\$ '
 fi
 
-# setup node version manager
-[ -s "$NVM_DIR/nvm.sh" ] && source "$NVM_DIR/nvm.sh"
-[ -s "$NVM_DIR/bash_completion" ] && source "$NVM_DIR/bash_completion"
+# Load package manager completions (Homebrew / Debian APT)
+if ! shopt -oq posix; then
+    if [ -f "$HOMEBREW_PREFIX/etc/profile.d/bash_completion.sh" ]; then
+        . "$HOMEBREW_PREFIX/etc/profile.d/bash_completion.sh"
+    elif [ -f /usr/share/bash-completion/bash_completion ]; then
+        . /usr/share/bash-completion/bash_completion
+    fi
+fi
 
-# open tmux if not already in a tmux session
-if command -v tmux &>/dev/null &&
-	[[ ! "$TERM" =~ screen ]] &&
-	[[ ! "$TERM" =~ tmux ]] &&
-	[ -z "$TMUX" ]; then
-	tmux new -As 'main'
+# Aliases and tools
+[ -f ~/.bash_aliases ] && . ~/.bash_aliases
+
+# Tmux multiplexer
+if command -v tmux &>/dev/null && 
+	[[ ! "$TERM" =~ screen|tmux ]] && 
+	[ -z "$TMUX" ] && 
+	[ -z "$VSCODE_PID" ]; then
+    tmux new -As 'main'
 fi

@@ -1,20 +1,16 @@
-# added for tmux
 export XDG_CONFIG_HOME="$HOME/.config"
 
-# added for Node version manager
-export NVM_DIR="$HOME/.nvm"
+# Auto-detect Homebrew on macOS
+if [[ "$OSTYPE" == "darwin"* ]]; then
+    eval "$(/opt/homebrew/bin/brew shellenv)"
+fi
 
-# if running bash
+# Prepend user bins to take priority over system binaries
+[ -d "$HOME/bin" ] && PATH="$HOME/bin:$PATH"
+[ -d "$HOME/.local/bin" ] && PATH="$HOME/.local/bin:$PATH"
+export PATH
+
+# Source .bashrc if running Bash
 if [ -n "$BASH_VERSION" ] && [ -f "$HOME/.bashrc" ]; then
     . "$HOME/.bashrc"
-fi
-
-# set PATH so it includes user's private bin if it exists
-if [ -d "$HOME/bin" ]; then
-    PATH="$HOME/bin:$PATH"
-fi
-
-# set PATH so it includes user's private bin if it exists
-if [ -d "$HOME/.local/bin" ]; then
-    PATH="$HOME/.local/bin:$PATH"
 fi
