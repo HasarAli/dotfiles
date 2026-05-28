@@ -70,6 +70,6 @@ fi
 if command -v tmux &>/dev/null && 
 	[[ ! "$TERM" =~ screen|tmux ]] && 
 	[ -z "$TMUX" ] && 
-	[ -z "$VSCODE_PID" ]; then
+	[ "$TERM_PROGRAM" != "vscode" ]; then
     tmux new -As 'main'
 fi
