@@ -1,10 +1,13 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+if [[ "$(id -u)" -eq 0 ]]; then
+    chown -R dev:dev /app/node_modules
+    exec gosu dev "$0" "$@"
+fi
+
 DOTFILES_DIR="${DOTFILES_DIR:-/home/dev/dotfiles}"
 DOTFILES_REPO="${DOTFILES_REPO:-https://github.com/HasarAli/dotfiles.git}"
-DOTFILES_REF="${DOTFILES_REF:-}"
-TPM_REPO="${TPM_REPO:-https://github.com/tmux-plugins/tpm}"
 TPM_DIR="${HOME}/.config/tmux/plugins/tpm"
 
 ensure_dotfiles_repo() {
@@ -19,11 +22,6 @@ ensure_dotfiles_repo() {
 
 	printf 'Cloning dotfiles from %s into %s\n' "${DOTFILES_REPO}" "${DOTFILES_DIR}"
 	git clone --depth 1 "${DOTFILES_REPO}" "${DOTFILES_DIR}"
-
-	if [[ -n "${DOTFILES_REF}" ]]; then
-		git -C "${DOTFILES_DIR}" fetch --depth 1 origin "${DOTFILES_REF}"
-		git -C "${DOTFILES_DIR}" checkout "${DOTFILES_REF}"
-	fi
 }
 
 ensure_stowed() {
@@ -36,7 +34,7 @@ ensure_tpm() {
 		return 0
 	fi
 	mkdir -p "$(dirname "${TPM_DIR}")"
-	git clone --depth 1 "${TPM_REPO}" "${TPM_DIR}"
+	git clone --depth 1 https://github.com/tmux-plugins/tpm "${TPM_DIR}"
 }
 
 ensure_tmux_plugins() {

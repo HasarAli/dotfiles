@@ -1,0 +1,55 @@
+FROM node:26-trixie
+
+ARG DEV_UID=1000
+ARG DEV_GID=1000
+
+ENV TERM=xterm-256color \
+    COLORTERM=truecolor \
+    DOTFILES_DIR=/home/dev/dotfiles \
+    DOTFILES_REPO=https://github.com/HasarAli/dotfiles.git \
+    TPM_REPO=https://github.com/tmux-plugins/tpm
+
+RUN printf '%s\n' 'Acquire::Check-Valid-Until "false";' > /etc/apt/apt.conf.d/99no-check-valid-until
+
+RUN set -eux; \
+    groupmod -n dev node; \
+    usermod -l dev -d /home/dev -m node; \
+    if [ "${DEV_GID}" != "1000" ]; then groupmod -g "${DEV_GID}" dev; fi; \
+    if [ "${DEV_UID}" != "1000" ]; then usermod -u "${DEV_UID}" dev; fi
+
+RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
+    --mount=type=cache,target=/var/lib/apt/lists,sharing=locked \
+    set -eux; \
+    apt-get update -qq; \
+    DEBIAN_FRONTEND=noninteractive apt-get install -qq -y --no-install-recommends \
+        bash-completion \
+        fd-find \
+        neovim \
+        ripgrep \
+        stow \
+        tmux \
+        tree-sitter-cli \
+        unzip; \
+    ln -sf /usr/bin/fdfind /usr/local/bin/fd
+
+RUN npm install -g pnpm && \
+    printf '#!/bin/sh\necho "error: use pnpm instead of npm" >&2\nexit 1\n' \
+        > /usr/local/bin/npm && \
+    printf '#!/bin/sh\necho "error: use pnpm dlx instead of npx" >&2\nexit 1\n' \
+        > /usr/local/bin/npx && \
+    chmod +x /usr/local/bin/npm /usr/local/bin/npx
+
+COPY --chown=dev:dev --chmod=755 docker/dev/entrypoint.sh /usr/local/bin/devcontainer-entrypoint
+
+WORKDIR /app
+RUN mkdir -p /app/node_modules && chown -R dev:dev /app
+
+USER dev
+
+EXPOSE 3000
+
+COPY --chown=dev:dev . .
+
+USER root
+
+ENTRYPOINT ["devcontainer-entrypoint"]

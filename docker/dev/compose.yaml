@@ -1,0 +1,33 @@
+services:
+  dev:
+    build:
+      context: ../..
+      dockerfile: docker/dev/Dockerfile
+      args:
+        DEV_UID: ${DEV_UID:-1000}
+        DEV_GID: ${DEV_GID:-1000}
+    image: devcontainer:latest
+    container_name: devcontainer
+    hostname: devcontainer
+    stdin_open: true
+    tty: true
+    
+    environment:
+      WATCHPACK_POLLING: "true"
+      CHOKIDAR_USEPOLLING: "true"
+      CHOKIDAR_INTERVAL: 100
+
+    volumes:
+      - dotfiles:/home/dev/dotfiles
+      - node_modules:/app/node_modules      
+      - pnpm_store:/home/dev/.local/share/pnpm/store
+      
+    working_dir: /app
+    ports:
+      - "3000:3000"
+
+
+volumes:
+  dotfiles:
+  node_modules:
+  pnpm_store:

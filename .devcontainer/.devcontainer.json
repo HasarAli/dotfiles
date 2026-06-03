@@ -1,0 +1,8 @@
+{
+    "name": "devcontainer",
+    "dockerComposeFile": "../docker/dev/compose.yaml",
+    "service": "dev",
+    "workspaceFolder": "/app",
+    "remoteUser": "dev",
+    "overrideCommand": false
+}
