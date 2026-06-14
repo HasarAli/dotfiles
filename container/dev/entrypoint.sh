@@ -9,6 +9,7 @@ fi
 
 DOTFILES_DIR="${DOTFILES_DIR:-/home/dev/dotfiles}"
 DOTFILES_REPO="${DOTFILES_REPO:-https://github.com/HasarAli/dotfiles.git}"
+
 TPM_DIR="${HOME}/.config/tmux/plugins/tpm"
 
 ensure_dotfiles_repo() {
