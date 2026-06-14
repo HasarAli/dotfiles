@@ -3,6 +3,7 @@ set -euo pipefail
 
 if [[ "$(id -u)" -eq 0 ]]; then
     chown -R dev:dev /app/node_modules
+    chown dev:dev "${DOTFILES_DIR:-/home/dev/dotfiles}"
     exec gosu dev "$0" "$@"
 fi
 

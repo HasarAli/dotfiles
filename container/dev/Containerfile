@@ -39,6 +39,8 @@ RUN npm install -g pnpm && \
         > /usr/local/bin/npx && \
     chmod +x /usr/local/bin/npm /usr/local/bin/npx
 
+RUN pnpm add -g --ignore-scripts @earendil-works/pi-coding-agent
+
 COPY --chown=dev:dev --chmod=755 docker/dev/entrypoint.sh /usr/local/bin/devcontainer-entrypoint
 
 WORKDIR /app
