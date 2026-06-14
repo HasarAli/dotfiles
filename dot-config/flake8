@@ -1,0 +1,5 @@
+[flake8]
+# Match black's line length (set via --line-length=100 in conform.nvim)
+max-line-length = 100
+# Defer line-wrapping and whitespace-around-slice to black
+extend-ignore = E203, W503
