@@ -1,5 +1,11 @@
 export XDG_CONFIG_HOME="$HOME/.config"
 
+# Default editor/pager for git, fzf, less, etc.
+export EDITOR="nvim"
+export VISUAL="nvim"
+export PAGER="less"
+export LESS="-R"   # keep ANSI colors in pager output (git, bat, etc.)
+
 # Auto-detect Homebrew on macOS
 if [[ "$OSTYPE" == "darwin"* ]]; then
     eval "$(/opt/homebrew/bin/brew shellenv)"

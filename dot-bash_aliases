@@ -23,14 +23,6 @@ alias l='ls -CF'
 alias alert='notify-send --urgency=low -i "$([ $? = 0 ] && echo terminal || echo error)" "$(history|tail -n1|sed -e '\''s/^\s*[0-9]\+\s*//;s/[;&|]\s*alert$//'\'')"'
 
 # modern tool replacements (only if installed)
-if command -v rg &>/dev/null; then
-	alias grep='rg'
-fi
-
-if command -v fd &>/dev/null; then
-	alias find='fd'
-fi
-
 if command -v nvim &>/dev/null; then
 	alias vi='nvim'
 	alias vim='nvim'

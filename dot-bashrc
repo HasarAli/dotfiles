@@ -15,7 +15,7 @@ fi
 
 # Shell options and history
 set -o noclobber
-shopt -s checkwinsize histappend cmdhist globstar autocd dirspell cdspell cdable_vars 2>/dev/null
+shopt -s checkwinsize histappend cmdhist globstar autocd dirspell cdspell cdable_vars histverify 2>/dev/null
 
 PROMPT_DIRTRIM=3
 CDPATH="."
