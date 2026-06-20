@@ -2,7 +2,6 @@
 \.git
 \.gitignore
 
-^/\.claude
 ^/README.*
 ^/install_deps\.sh
 ^/docker
