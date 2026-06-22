@@ -3,6 +3,9 @@ case $- in
     *) return ;;
 esac
 
+# Claude Code: default to fullscreen rendering (= `tui: fullscreen`)
+export CLAUDE_CODE_NO_FLICKER=1
+
 # GNU Coreutils path alignment for color support
 if command -v dircolors &>/dev/null; then
     eval "$(dircolors -b)"
