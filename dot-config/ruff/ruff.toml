@@ -1,0 +1,4 @@
+# User-level fallback: applies only when a file's tree has no
+# pyproject.toml/ruff.toml of its own (one-off scripts, config-less repos).
+# Project config always wins.
+line-length = 100

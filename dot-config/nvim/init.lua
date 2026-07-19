@@ -105,8 +105,33 @@ local rtp = vim.opt.rtp
 rtp:prepend(lazypath)
 
 -- [[ Plugins ]]
+-- Language modules (lua/langs/*.lua) are opt-in per machine: comma-separated
+-- names in $NVIM_LANGS, or in ~/.config/nvim-langs if the env var is unset.
+-- With none enabled, no language servers or Mason tools are installed.
+local function lang_spec()
+  local src = vim.env.NVIM_LANGS
+  if not src then
+    local file = io.open(vim.fs.normalize '~/.config/nvim-langs')
+    if file then
+      src = file:read '*a'
+      file:close()
+    end
+  end
+
+  local spec = {}
+  for lang in (src or ''):gmatch '[^,%s]+' do
+    if vim.uv.fs_stat(vim.fn.stdpath 'config' .. '/lua/langs/' .. lang .. '.lua') then
+      table.insert(spec, { import = 'langs.' .. lang })
+    else
+      vim.notify('nvim-langs: no such language module: ' .. lang, vim.log.levels.WARN)
+    end
+  end
+  return spec
+end
+
 require('lazy').setup({
   { import = 'plugins' },
+  lang_spec(),
 }, { ---@diagnostic disable-line: missing-fields
   -- No plugin here needs luarocks
   rocks = { enabled = false },

@@ -8,12 +8,39 @@ Requires **Debian or Ubuntu** (the install script uses `apt-get`).
 
 ```sh
 git clone <repo-url> dotfiles
-sudo bash dotfiles/install_deps.sh
+sudo bash dotfiles/install_deps.sh    # add --lang-servers if enabling nvim language modules
 stow -v --dotfiles -t $HOME -d <path to dotfiles> .
 git clone --depth 1 https://github.com/tmux-plugins/tpm ~/.config/tmux/plugins/tpm
 ```
 
 Then launch tmux and press `<prefix> I` once to install tmux plugins.
+
+## Neovim language modules
+
+Language tooling (LSP servers, formatters, linters, debug adapters) is opt-in
+per machine, so a box that isn't used for active development downloads none of
+it. Enable modules by listing them comma-separated in `$NVIM_LANGS`, or in
+`~/.config/nvim-langs` (checked when the env var is unset):
+
+```sh
+echo 'python,lua,bash,data' > ~/.config/nvim-langs
+```
+
+| Module       | Installs (via Mason)                                     |
+| ------------ | -------------------------------------------------------- |
+| `python`     | basedpyright, ruff, debugpy (+ dap config)               |
+| `typescript` | ts_ls, eslint, prettier, js-debug-adapter (+ dap config) |
+| `lua`        | lua_ls, stylua                                           |
+| `bash`       | bash-language-server                                     |
+| `data`       | jsonls, yamlls, marksman, prettier                       |
+
+`python` needs only `python3-venv` (its tools install via pip — no node);
+`typescript`, `bash`, and `data`'s jsonls/yamlls/prettier need `nodejs`/`npm`.
+`install_deps.sh --lang-servers` installs all three. Mason installs the tools on the
+next nvim launch; disabling a module stops loading its servers but doesn't
+delete installed binaries (`:MasonUninstall <pkg>` if you want them gone).
+Modules live in `dot-config/nvim/lua/langs/` — one file per language, extending
+the base lsp/lint/dap specs via lazy.nvim opts fragments.
 
 `install_deps.sh` must run as root. TPM is cloned into your home after stow so `tmux.conf` can load it from `~/.config/tmux/plugins/tpm` (see the `run` line at the bottom of `dot-config/tmux/tmux.conf`).
 

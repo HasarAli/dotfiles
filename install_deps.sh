@@ -425,10 +425,16 @@ install_stow() {
 }
 
 main() {
+    local with_lang_servers=0
+
     if [[ $# -gt 0 ]]; then
-        printf 'Error: Unknown argument: %s\n' "$1" >&2
-        printf 'Usage: sudo %s\n' "$0" >&2
-        return 1
+        if [[ $# -eq 1 && "$1" == "--lang-servers" ]]; then
+            with_lang_servers=1
+        else
+            printf 'Error: Unknown argument: %s\n' "$1" >&2
+            printf 'Usage: sudo %s [--lang-servers]\n' "$0" >&2
+            return 1
+        fi
     fi
 
     validate_not_sourced
@@ -436,9 +442,16 @@ main() {
     validate_debian
     prepare_directories
 
-    ensure_installed bash-completion git
+    ensure_installed bash-completion git tmux
     install_stow
     install_neovim
+
+    # Only needed when nvim language modules are enabled (see ~/.config/nvim-langs):
+    # Mason installs python tools via pip in a venv (python3-venv) and the
+    # typescript/bash/data servers via npm.
+    if [[ "$with_lang_servers" -eq 1 ]]; then
+        ensure_installed nodejs npm python3-venv
+    fi
 }
 
 main "$@"

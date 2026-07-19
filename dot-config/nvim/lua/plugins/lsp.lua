@@ -14,7 +14,10 @@ return {
     'WhoIsSethDaniel/mason-tool-installer.nvim',
     { 'j-hui/fidget.nvim', opts = {} },
   },
-  config = function()
+  -- Populated by language modules (lua/langs/*.lua) via opts fragments:
+  -- servers is a name -> vim.lsp.Config map, tools a list of Mason packages.
+  opts = { servers = {}, tools = {} },
+  config = function(_, opts)
     vim.api.nvim_create_autocmd('LspAttach', {
       group = vim.api.nvim_create_augroup('kickstart-lsp-attach', { clear = true }),
       callback = function(event)
@@ -58,60 +61,11 @@ return {
       end,
     })
 
-    ---@type table<string, vim.lsp.Config>
-    local servers = {
-      pyright = {},
-      ts_ls = {},
-      -- Lint only; prettier (via conform) owns formatting, so don't let eslint
-      -- advertise a formatter that could fight it. For diagnostic-level conflicts,
-      -- the project should pull in eslint-config-prettier.
-      eslint = { settings = { format = false } },
-      jsonls = {},
-      -- Drop lspconfig's extra yaml.docker-compose/gitlab/helm-values filetypes;
-      -- nothing sets them, and they trip checkhealth's unknown-filetype warning
-      yamlls = { filetypes = { 'yaml' } },
-      bashls = {},
-      lua_ls = {
-        -- Configure lua_ls to understand neovim's lua runtime when editing config files.
-        -- Skipped if workspace has its own .luarc.json/.luarc.jsonc.
-        on_init = function(client)
-          if client.workspace_folders then
-            local path = client.workspace_folders[1].name
-            if path ~= vim.fn.stdpath 'config' and (vim.uv.fs_stat(path .. '/.luarc.json') or vim.uv.fs_stat(path .. '/.luarc.jsonc')) then return end
-          end
-
-          client.config.settings.Lua = vim.tbl_deep_extend('force', client.config.settings.Lua, {
-            runtime = {
-              version = 'LuaJIT',
-              path = { 'lua/?.lua', 'lua/?/init.lua' },
-            },
-            workspace = {
-              checkThirdParty = false,
-              library = vim.tbl_extend('force', vim.api.nvim_get_runtime_file('', true), {
-                '${3rd}/luv/library',
-                '${3rd}/busted/library',
-              }),
-            },
-          })
-        end,
-        settings = {
-          Lua = {},
-        },
-      },
-    }
-
-    local ensure_installed = vim.tbl_keys(servers or {})
-    vim.list_extend(ensure_installed, {
-      'stylua', -- lua formatter
-      'black', -- python formatter
-      'flake8', -- python linter
-      'prettier', -- js/ts/json/yaml/css/md formatter
-      'debugpy', -- python debugger
-      'js-debug-adapter', -- js/ts/react (browser) debugger
-    })
+    local ensure_installed = vim.tbl_keys(opts.servers)
+    vim.list_extend(ensure_installed, opts.tools)
     require('mason-tool-installer').setup { ensure_installed = ensure_installed }
 
-    for name, server in pairs(servers) do
+    for name, server in pairs(opts.servers) do
       vim.lsp.config(name, server)
       vim.lsp.enable(name)
     end

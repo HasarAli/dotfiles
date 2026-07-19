@@ -8,12 +8,12 @@ return {
     vim.treesitter.language.register('json', 'jsonc')
 
     require('tree-sitter-manager').setup {
-      -- Installed at startup; missing ones are also pulled in on demand via auto_install
+      -- Core parsers installed at startup; language parsers (python, typescript,
+      -- html, css, ...) are pulled in on demand via auto_install instead.
       ensure_installed = {
         'bash',
         'c',
         'diff',
-        'html',
         'lua',
         'luadoc',
         'markdown',
@@ -21,13 +21,8 @@ return {
         'query',
         'vim',
         'vimdoc',
-        'python',
-        'typescript',
-        'tsx',
-        'javascript',
         'json',
         'yaml',
-        'css',
       },
       auto_install = true, -- install a parser the first time its filetype is opened
       highlight = true, -- enable treesitter highlighting (vim.treesitter.start)

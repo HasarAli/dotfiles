@@ -28,20 +28,26 @@ return {
         }
       end
     end,
+    -- No formatter args here: ruff/prettier/stylua read project config from the
+    -- file's tree, falling back to user-level config (~/.config/ruff/ruff.toml)
+    -- for one-off scripts. Editor flags would override project settings.
     formatters = {
-      black = { prepend_args = { '--line-length=100' } },
+      -- Only run biome in projects that adopted it (biome.json[c] up the tree);
+      -- everything else falls through to prettier. The binary comes from the
+      -- project's node_modules, so no Mason install is needed.
+      biome = { require_cwd = true },
     },
     formatters_by_ft = {
       lua = { 'stylua' },
-      python = { 'black' },
-      javascript = { 'prettier' },
-      javascriptreact = { 'prettier' },
-      typescript = { 'prettier' },
-      typescriptreact = { 'prettier' },
-      json = { 'prettier' },
-      jsonc = { 'prettier' },
+      python = { 'ruff_format' },
+      javascript = { 'biome', 'prettier', stop_after_first = true },
+      javascriptreact = { 'biome', 'prettier', stop_after_first = true },
+      typescript = { 'biome', 'prettier', stop_after_first = true },
+      typescriptreact = { 'biome', 'prettier', stop_after_first = true },
+      json = { 'biome', 'prettier', stop_after_first = true },
+      jsonc = { 'biome', 'prettier', stop_after_first = true },
       yaml = { 'prettier' },
-      css = { 'prettier' },
+      css = { 'biome', 'prettier', stop_after_first = true },
       html = { 'prettier' },
       markdown = { 'prettier' },
     },
