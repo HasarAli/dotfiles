@@ -1,0 +1,9 @@
+[user]
+	name = Hasar Ali
+	email = 43414283+HasarAli@users.noreply.github.com
+[init]
+	defaultBranch = main
+# Machine-specific overrides (e.g. a work email) go in ~/.gitconfig.local,
+# which stays out of the repo. Later values win, so keep this include last.
+[include]
+	path = ~/.gitconfig.local
