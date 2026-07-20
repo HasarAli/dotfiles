@@ -442,7 +442,7 @@ main() {
     validate_debian
     prepare_directories
 
-    ensure_installed bash-completion git tmux
+    ensure_installed bash-completion git tmux jq
     install_stow
     install_neovim
 
