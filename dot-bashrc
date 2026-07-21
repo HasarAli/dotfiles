@@ -69,6 +69,12 @@ fi
 # Aliases and tools
 [ -f ~/.bash_aliases ] && . ~/.bash_aliases
 
+# API keys (sops+age encrypted; key at ~/.config/age/keys.txt)
+export SOPS_AGE_KEY_FILE=~/.config/age/keys.txt
+if command -v sops &>/dev/null && [ -f ~/Projects/dotfiles/secrets/env.yaml ]; then
+    eval "$(sops -d --output-type dotenv ~/Projects/dotfiles/secrets/env.yaml 2>/dev/null | sed 's/^/export /')"
+fi
+
 # Tmux multiplexer
 if command -v tmux &>/dev/null && 
 	[[ ! "$TERM" =~ screen|tmux ]] && 

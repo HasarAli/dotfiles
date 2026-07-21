@@ -15,6 +15,14 @@ git clone --depth 1 https://github.com/tmux-plugins/tpm ~/.config/tmux/plugins/t
 
 Then launch tmux and press `<prefix> I` once to install tmux plugins.
 
+## Secrets
+
+API keys live encrypted in `secrets/env.yaml` ([sops](https://github.com/getsops/sops) + [age](https://github.com/FiloSottile/age)); values are ciphertext, key names stay diffable. `.bashrc` decrypts and exports them on shell start. Requires the age identity at `~/.config/age/keys.txt` — copy it to each machine out-of-band (it is never committed).
+
+```sh
+SOPS_AGE_KEY_FILE=~/.config/age/keys.txt sops secrets/env.yaml   # edit keys (re-encrypts on save)
+```
+
 ## Neovim language modules
 
 Language tooling (LSP servers, formatters, linters, debug adapters) is opt-in

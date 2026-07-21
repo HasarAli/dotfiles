@@ -1,2 +1,7 @@
 dot-config/tmux/plugins/
 .claude/
+
+# decrypted secrets never enter the repo
+secrets/*.dec*
+secrets/*.env
+secrets/*.dotenv
