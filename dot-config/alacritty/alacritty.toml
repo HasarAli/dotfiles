@@ -1,0 +1,36 @@
+# Open at final size immediately. The shell auto-starts tmux (bashrc:
+# `tmux new -As main`) the instant the first window opens, so the session —
+# and any resurrect-restored windows — get created at whatever size the
+# window has at that moment. Starting maximized means tmux never sees the
+# small pre-resize geometry.
+[window]
+startup_mode = "Maximized"
+
+[font.normal]
+family = "JetBrainsMono Nerd Font Mono"
+style = "Regular"
+
+[font.bold]
+family = "JetBrainsMono Nerd Font Mono"
+style = "Bold"
+
+[font.italic]
+family = "JetBrainsMono Nerd Font Mono"
+style = "Italic"
+
+[font.bold_italic]
+family = "JetBrainsMono Nerd Font Mono"
+style = "Bold Italic"
+
+
+[[keyboard.bindings]]
+key = "Return"
+mods = "Shift"
+chars = "\u001B\r"
+
+# macOS delivers Option+Enter as plain Enter otherwise. CSI-u sequence lets
+# tmux/pi distinguish it (e.g. pi follow-up queueing).
+[[keyboard.bindings]]
+key = "Return"
+mods = "Alt"
+chars = "\u001B[13;3u"
