@@ -1,0 +1,16 @@
+{
+  "mcpServers": {
+    "serena": {
+      "command": "/Users/hali/.local/bin/serena",
+      "args": ["start-mcp-server", "--context", "ide", "--project-from-cwd"]
+    },
+    "context-mode": {
+      "command": "npx",
+      "args": ["-y", "context-mode"]
+    },
+    "chrome-devtools": {
+      "command": "npx",
+      "args": ["-y", "chrome-devtools-mcp@latest"]
+    }
+  }
+}

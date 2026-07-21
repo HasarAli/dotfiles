@@ -1,0 +1,11 @@
+{
+  "version": 1,
+  "entries": {
+    "[\"npx\",\"-y\",\"context-mode\"]": {
+      "resolvedBin": "/Users/hali/.npm/_npx/16b0a7c005a6df70/node_modules/context-mode/cli.bundle.mjs",
+      "resolvedAt": 1784619389726,
+      "packageVersion": "1.0.169",
+      "isJs": true
+    }
+  }
+}
