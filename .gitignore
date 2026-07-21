@@ -1,5 +1,6 @@
 dot-config/tmux/plugins/
 .claude/
+dot-pi/agent/sessions/
 
 # decrypted secrets never enter the repo
 secrets/*.dec*
