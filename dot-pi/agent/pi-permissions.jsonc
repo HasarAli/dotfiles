@@ -1,0 +1,125 @@
+{
+  "$schema": "./pi-permissions.schema.json",
+  // Editor tip: relative path resolves from this file's location
+  // Default fallback — everything asks unless overridden below
+  "defaultPolicy": {
+    "tools": "ask",
+    "bash": "ask",
+    "mcp": "ask",
+    "skills": "ask",
+    "special": "ask"
+  },
+  // Tool-level permissions (last-declared-match wins: put broad rules first, overrides later)
+  "tools": {
+    "*": "ask",
+    // Read-only tools — allow silently
+    "read": "allow",
+    "hypa_read": "allow",
+    "grep": "allow",
+    "hypa_grep": "allow",
+    "find": "allow",
+    "hypa_find": "allow",
+    "ls": "allow",
+    "hypa_ls": "allow",
+    // Write tools — ask (gateway; bash section does finer command-level matching)
+    "write": "ask",
+    "edit": "ask",
+    "bash": "ask",
+    "mcp": "ask"
+  },
+  // Bash command patterns (last-declared-match wins)
+  "bash": {
+    // Broad fallback — ask everything
+    "*": "ask",
+
+    // ── Read-only / info commands ──
+    "ls *": "allow",
+    "cat *": "allow",
+    "head *": "allow",
+    "tail *": "allow",
+    "echo *": "allow",
+    "printf *": "allow",
+    "which *": "allow",
+    "file *": "allow",
+    "pwd": "allow",
+    "whoami": "allow",
+    "id": "allow",
+    "date": "allow",
+    "env *": "allow",
+    "printenv *": "allow",
+    "type *": "allow",
+    "command *": "allow",
+    "find *": "allow",
+    "grep *": "allow",
+    "rg *": "allow",
+    "sort *": "allow",
+    "uniq *": "allow",
+    "wc *": "allow",
+    "du *": "allow",
+    "df *": "allow",
+    "tree *": "allow",
+    "stat *": "allow",
+    "brew list": "allow",
+    "brew info *": "allow",
+    "brew search *": "allow",
+    "npm ls *": "allow",
+    "npm info *": "allow",
+    "pnpm ls *": "allow",
+    "pip list": "allow",
+    "pip show *": "allow",
+
+    // ── Lightweight file ops ──
+    "mkdir -p *": "allow",
+    "touch *": "allow",
+    "source *": "allow",
+    ". *": "allow",
+    "export *": "allow",
+    "cd *": "allow",
+
+    // ── Git ──
+    // Broad git catch-all: ask
+    "git *": "ask",
+    // Non-destructive git ops: allow
+    "git status": "allow",
+    "git diff *": "allow",
+    "git log *": "allow",
+    "git show *": "allow",
+    "git branch *": "allow",
+    "git ls-files *": "allow",
+    "git config *": "allow",
+    "git remote *": "allow",
+    "git stash list": "allow",
+    "git stash show *": "allow",
+    "git add *": "allow",
+    "git commit *": "allow",
+    "git checkout *": "allow",
+    "git switch *": "allow",
+    "git restore *": "allow",
+    "git fetch *": "allow",
+    "git pull *": "allow",
+    "git clone *": "allow",
+    "git init": "allow",
+    "git mv *": "allow",
+    // Destructive / remote-modifying git: ask explicitly
+    "git push *": "ask",
+    "git push": "ask"
+  },
+  // MCP server/tool target permissions
+  "mcp": {
+    "*": "ask",
+    // Discovery ops — allow silently
+    "mcp_status": "allow",
+    "mcp_list": "allow",
+    "mcp_search": "allow",
+    "mcp_describe": "allow"
+  },
+  // Skill loading
+  "skills": {
+    "*": "ask"
+  },
+  // Special guards
+  "special": {
+    "doom_loop": "deny",
+    "external_directory": "ask"
+  }
+}
