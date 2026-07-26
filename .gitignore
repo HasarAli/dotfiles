@@ -19,4 +19,7 @@ secrets/*.dotenv
 .DS_Store
 .serena/
 dot-pi/agent/mcp-cache.json
+dot-pi/agent/mcp-npx-cache.json
+dot-pi/agent/models-store.json
 dot-pi/agent/extensions/herdr-agent-state.ts
+dot-pi/context-mode/
