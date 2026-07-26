@@ -6,6 +6,9 @@ esac
 # Claude Code: default to fullscreen rendering (= `tui: fullscreen`)
 export CLAUDE_CODE_NO_FLICKER=1
 
+# Pi: extend prompt cache TTL to 1h (default: 5m)
+export PI_CACHE_RETENTION=long
+
 # GNU Coreutils path alignment for color support
 if command -v dircolors &>/dev/null; then
     eval "$(dircolors -b)"
@@ -48,7 +51,7 @@ done
 
 GIT_PS1_SHOWDIRTYSTATE=1
 GIT_PS1_SHOWUNTRACKEDFILES=1
-GIT_PS1_SHOWUPSTREAM="verbose"
+GIT_PS1_SHOWUPSTREAM="git"
 GIT_PS1_SHOWCONFLICTSTATE="yes"
 
 if command -v __git_ps1 &>/dev/null; then
@@ -75,10 +78,14 @@ if command -v sops &>/dev/null && [ -f ~/Projects/dotfiles/secrets/env.yaml ]; t
     eval "$(sops -d --output-type dotenv ~/Projects/dotfiles/secrets/env.yaml 2>/dev/null | sed 's/^/export /')"
 fi
 
-# Tmux multiplexer
-if command -v tmux &>/dev/null && 
-	[[ ! "$TERM" =~ screen|tmux ]] && 
-	[ -z "$TMUX" ] && 
+# Hound BYOK — reuse existing keys to escalate past its keyless search when needed
+[ -n "${SERPER_API_KEY:-}" ]    && export HOUND_SEARCH_SERPER_KEYS="$SERPER_API_KEY"
+[ -n "${EXA_API_KEY:-}" ]       && export HOUND_SEARCH_EXA_KEYS="$EXA_API_KEY"
+[ -n "${FIRECRAWL_API_KEY:-}" ] && export HOUND_SEARCH_FIRECRAWL_KEYS="$FIRECRAWL_API_KEY"
+
+# Herdr multiplexer
+if command -v herdr &>/dev/null &&
+	[ -z "$HERDR_ENV" ] &&
 	[ "$TERM_PROGRAM" != "vscode" ]; then
-    tmux new -As 'main'
+    herdr
 fi
