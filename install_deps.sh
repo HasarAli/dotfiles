@@ -33,18 +33,22 @@ validate_not_sourced() {
     fi
 }
 
-validate_root() {
-    if [[ "$(id -u)" -ne 0 ]]; then
-        printf 'Error: This script must be run as root (e.g. sudo).\n' >&2
-        return 1
-    fi
-}
-
-validate_debian() {
-    if [[ ! -f /etc/debian_version ]]; then
-        printf 'Error: This script supports Debian/Ubuntu only.\n' >&2
-        return 1
-    fi
+detect_os() {
+    case "$(uname -s)" in
+        Darwin) printf 'macos\n' ;;
+        Linux)
+            if [[ -f /etc/debian_version ]]; then
+                printf 'debian\n'
+            else
+                printf 'Error: Unsupported Linux distribution. Only Debian/Ubuntu supported.\n' >&2
+                return 1
+            fi
+            ;;
+        *)
+            printf 'Error: Unsupported OS: %s\n' "$(uname -s)" >&2
+            return 1
+            ;;
+    esac
 }
 
 prepare_directories() {
@@ -52,31 +56,15 @@ prepare_directories() {
     mkdir -p "$TMP_DIR"
 }
 
-ensure_installed() {
-    local missing=()
-    local pkg
-
-    for pkg in "$@"; do
-        if ! dpkg -s "$pkg" >/dev/null 2>&1; then
-            missing+=("$pkg")
-        fi
-    done
-
-    if [[ ${#missing[@]} -eq 0 ]]; then
-        return 0
-    fi
-
-    printf 'Installing packages: %s\n' "${missing[*]}"
-
-    if ! apt-get update -qq; then
-        printf 'Error: apt-get update failed.\n' >&2
-        return 1
-    fi
-
-    if ! apt-get install -qq -y "${missing[@]}"; then
-        printf 'Error: Failed to install packages: %s\n' "${missing[*]}" >&2
-        return 1
-    fi
+get_arch() {
+    case "$(uname -m)" in
+        x86_64)  printf 'x86_64\n' ;;
+        aarch64) printf 'aarch64\n' ;;
+        *)
+            printf 'Error: Unsupported architecture: %s\n' "$(uname -m)" >&2
+            return 1
+            ;;
+    esac
 }
 
 verify_sha256() {
@@ -165,157 +153,45 @@ create_symlink() {
     ln -sf -- "$source" "$target"
 }
 
-get_arch() {
-    case "$(uname -m)" in
-        x86_64)  printf 'x86_64\n' ;;
-        aarch64) printf 'aarch64\n' ;;
-        *)
-            printf 'Error: Unsupported architecture: %s\n' "$(uname -m)" >&2
-            return 1
-            ;;
-    esac
-}
-
-install_ripgrep() {
+install_herdr() {
     local arch
-    local target
-    local version="15.1.0"
-    local dir
-    local tarball
-    local url
-    local cached
-    local sha256
-
-    ensure_installed curl
-
-    if command -v rg >/dev/null 2>&1; then
-        printf 'ripgrep already installed: %s\n' "$(rg --version | head -n1)"
-        return 0
-    fi
-
-    arch=$(get_arch) || return 1
-
-    case "$arch" in
-        x86_64)
-            target="x86_64-unknown-linux-musl"
-            sha256="1c9297be4a084eea7ecaedf93eb03d058d6faae29bbc57ecdaf5063921491599"
-            ;;
-        aarch64)
-            target="aarch64-unknown-linux-gnu"
-            sha256="2b661c6ef508e902f388e9098d9c4c5aca72c87b55922d94abdba830b4dc885e"
-            ;;
-    esac
-
-    dir="ripgrep-${version}-${target}"
-    tarball="${dir}.tar.gz"
-    url="https://github.com/BurntSushi/ripgrep/releases/download/${version}/${tarball}"
-    cached="${CACHE_DIR}/${dir}"
-
-    if [[ ! -x "${cached}/rg" ]]; then
-        download_file "$tarball" "$url" "$sha256"
-        extract_tarball "${TMP_DIR}/${tarball}" "$CACHE_DIR"
-    fi
-
-    create_symlink "${cached}/rg" "/usr/local/bin/rg"
-
-    printf 'Installed ripgrep: %s\n' "$(rg --version | head -n1)"
-}
-
-install_fd() {
-    local arch
-    local version="v10.4.2"
-    local dir
-    local tarball
-    local url
-    local cached
-    local sha256
-
-    ensure_installed curl
-
-    if command -v fd >/dev/null 2>&1; then
-        printf 'fd already installed: %s\n' "$(fd --version)"
-        return 0
-    fi
-
-    arch=$(get_arch) || return 1
-
-    case "$arch" in
-        x86_64)
-            sha256="def59805cd14b5651b68990855f426ad087f3b96881296d963910431ba3143c8"
-            ;;
-        aarch64)
-            sha256="6c51f7c5446b3338b1e401ff15dc194c590bb2fa64fd43ff3278300f073adec5"
-            ;;
-    esac
-
-    dir="fd-${version}-${arch}-unknown-linux-gnu"
-    tarball="${dir}.tar.gz"
-    url="https://github.com/sharkdp/fd/releases/download/${version}/${tarball}"
-    cached="${CACHE_DIR}/${dir}"
-
-    if [[ ! -x "${cached}/fd" ]]; then
-        download_file "$tarball" "$url" "$sha256"
-        extract_tarball "${TMP_DIR}/${tarball}" "$CACHE_DIR"
-    fi
-
-    create_symlink "${cached}/fd" "/usr/local/bin/fd"
-
-    printf 'Installed fd: %s\n' "$(fd --version)"
-}
-
-install_tree_sitter() {
-    local arch
-    local arch_name
-    local version="v0.25.10"
+    local version="0.7.5"
     local filename
     local url
     local cached
-    local sha256
-    local tmp
 
-    ensure_installed curl gzip
-
-    if command -v tree-sitter >/dev/null 2>&1; then
-        printf 'tree-sitter already installed: %s\n' "$(tree-sitter --version | head -n1)"
+    if command -v herdr >/dev/null 2>&1; then
+        printf 'herdr already installed: %s\n' "$(herdr --version 2>&1)"
         return 0
     fi
 
     arch=$(get_arch) || return 1
 
     case "$arch" in
-        x86_64)
-            arch_name="x64"
-            sha256="8283ddba69253c698f6e987ba0e2f9285e079c8db4d36ebe1394b5bb3a0ebdfd"
-            ;;
-        aarch64)
-            arch_name="arm64"
-            sha256="07fbff8ae0eeb0d3e496e14fc1a30dcc730cc2c97d70e601e5357f2e51958af5"
-            ;;
+        x86_64)  filename="herdr-linux-x86_64" ;;
+        aarch64) filename="herdr-linux-aarch64" ;;
     esac
 
-    filename="tree-sitter-linux-${arch_name}.gz"
-    url="https://github.com/tree-sitter/tree-sitter/releases/download/${version}/${filename}"
-    cached="${CACHE_DIR}/tree-sitter-${version}-${arch_name}"
+    url="https://github.com/ogulcancelik/herdr/releases/download/v${version}/${filename}"
+    cached="${CACHE_DIR}/herdr-${version}-${arch}"
 
     if [[ ! -x "$cached" ]]; then
-        download_file "$filename" "$url" "$sha256"
+        printf 'Downloading herdr %s...\n' "$version"
 
-        tmp="${cached}.tmp"
-        rm -f -- "$tmp"
-
-        if ! gunzip -c "${TMP_DIR}/${filename}" > "$tmp"; then
-            printf 'Error: Failed to extract tree-sitter binary.\n' >&2
-            rm -f -- "$tmp"
+        if ! curl --fail --location --silent --show-error \
+            --output "$cached" \
+            "$url"; then
+            printf 'Error: Failed to download herdr.\n' >&2
+            rm -f -- "$cached"
             return 1
         fi
 
-        chmod +x "$tmp"
-        mv -- "$tmp" "$cached"
+        chmod +x "$cached"
     fi
 
-    create_symlink "$cached" "/usr/local/bin/tree-sitter"
+    create_symlink "$cached" "/usr/local/bin/herdr"
 
-    printf 'Installed tree-sitter: %s\n' "$(tree-sitter --version | head -n1)"
+    printf 'Installed herdr: %s\n' "$(herdr --version 2>&1)"
 }
 
 install_neovim() {
@@ -327,12 +203,6 @@ install_neovim() {
     local url
     local cached
     local sha256
-
-    ensure_installed git make gcc curl unzip
-
-    install_ripgrep
-    install_fd
-    install_tree_sitter
 
     if command -v nvim >/dev/null 2>&1; then
         printf 'neovim already installed: %s\n' "$(nvim --version | head -n1)"
@@ -368,60 +238,38 @@ install_neovim() {
     printf 'Installed neovim: %s\n' "$(nvim --version | head -n1)"
 }
 
-install_stow() {
-    local version=""
-    local required_version="2.4.1"
-    local dir="stow-${required_version}"
-    local tarball="${dir}.tar.gz"
-    local url="https://ftp.gnu.org/gnu/stow/${tarball}"
-    local cached="${CACHE_DIR}/${dir}"
-    local sha256="2a671e75fc207303bfe86a9a7223169c7669df0a8108ebdf1a7fe8cd2b88780b"
-
-    if command -v stow >/dev/null 2>&1; then
-        if ! version=$(stow --version 2>/dev/null | grep -oE '[0-9]+\.[0-9]+(\.[0-9]+)?' | head -n1); then
-            version=""
-        fi
-
-        if [[ -n "${version// }" ]] && dpkg --compare-versions "$version" ge "$required_version"; then
-            printf 'stow already installed: %s\n' "$(stow --version | head -n1)"
-            return 0
-        fi
+install_macos() {
+    if ! command -v brew >/dev/null 2>&1; then
+        printf 'Error: Homebrew not found. Install from https://brew.sh\n' >&2
+        return 1
     fi
 
-    ensure_installed curl make perl
+    printf 'Installing packages via Homebrew...\n'
+    brew install age bash-completion git herdr jq neovim pi-coding-agent sops stow
+}
 
-    if [[ ! -f "${cached}/configure" ]]; then
-        download_file "$tarball" "$url" "$sha256"
-        extract_tarball "${TMP_DIR}/${tarball}" "$CACHE_DIR"
+install_debian() {
+    if [[ "$(id -u)" -ne 0 ]]; then
+        printf 'Error: This script must be run as root (e.g. sudo) on Debian.\n' >&2
+        return 1
     fi
 
-    if [[ -f "${cached}/.install-complete" ]]; then
-        printf 'stow already built: %s\n' "$(stow --version | head -n1)"
-        return 0
+    prepare_directories
+
+    printf 'Installing packages via apt...\n'
+    apt-get update -qq
+    apt-get install -qq -y age bash-completion curl git jq sops stow
+
+    # pi needs node; install it at the OS level even without --lang-servers
+    if ! command -v node >/dev/null 2>&1; then
+        apt-get install -qq -y nodejs npm
+    fi
+    if ! command -v pi >/dev/null 2>&1; then
+        npm install -g @earendil-works/pi-coding-agent
     fi
 
-    (
-        cd "$cached" || return 1
-
-        if ! ./configure --prefix=/usr/local; then
-            printf 'Error: stow configure failed.\n' >&2
-            return 1
-        fi
-
-        if ! make -j"$(nproc)"; then
-            printf 'Error: stow build failed.\n' >&2
-            return 1
-        fi
-
-        if ! make install; then
-            printf 'Error: stow installation failed.\n' >&2
-            return 1
-        fi
-
-        touch "${cached}/.install-complete"
-    )
-
-    printf 'Installed stow: %s\n' "$(stow --version | head -n1)"
+    install_herdr
+    install_neovim
 }
 
 main() {
@@ -432,26 +280,43 @@ main() {
             with_lang_servers=1
         else
             printf 'Error: Unknown argument: %s\n' "$1" >&2
-            printf 'Usage: sudo %s [--lang-servers]\n' "$0" >&2
+            printf 'Usage: %s [--lang-servers]\n' "$0" >&2
             return 1
         fi
     fi
 
     validate_not_sourced
-    validate_root
-    validate_debian
-    prepare_directories
 
-    ensure_installed bash-completion git tmux jq
-    install_stow
-    install_neovim
+    local os
+    os=$(detect_os) || return 1
 
-    # Only needed when nvim language modules are enabled (see ~/.config/nvim-langs):
-    # Mason installs python tools via pip in a venv (python3-venv) and the
-    # typescript/bash/data servers via npm.
+    case "$os" in
+        macos) install_macos ;;
+        debian) install_debian ;;
+    esac
+
     if [[ "$with_lang_servers" -eq 1 ]]; then
-        ensure_installed nodejs npm python3-venv
+        case "$os" in
+            macos)
+                brew install node python3
+                ;;
+            debian)
+                apt-get install -qq -y nodejs npm python3-venv
+                ;;
+        esac
     fi
+
+    # Hound MCP — keyless web search + stealth fetch/crawl/PDF (the web-search engine)
+    if ! command -v hound &>/dev/null && [[ ! -x "$HOME/.local/bin/hound" ]]; then
+        command -v pipx &>/dev/null || python3 -m pip install --user -q pipx
+        python3 -m pipx install 'hound-mcp[all]'
+    fi
+    # Stealth browser Hound escalates to when a page blocks plain HTTP (idempotent)
+    hvenv="$(python3 -m pipx environment --value PIPX_LOCAL_VENVS 2>/dev/null)/hound-mcp/bin"
+    "$hvenv/patchright" install chromium 2>/dev/null \
+        || "$hvenv/playwright" install chromium 2>/dev/null || true
+
+    printf '\nAll dependencies installed.\n'
 }
 
 main "$@"
