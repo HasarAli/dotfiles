@@ -101,7 +101,9 @@ install_macos() {
     install_homebrew
 
     printf 'Installing system packages via Homebrew...\n'
-    brew install age bash-completion git herdr jq stow
+    # bash-completion@2 is the Bash 4+ series; the unversioned formula targets
+    # Bash 3.2 and conflicts with it. .bashrc sources the @2 profile.d script.
+    brew install age bash-completion@2 git herdr jq stow
 }
 
 install_debian() {
@@ -139,15 +141,25 @@ install_runtimes() {
 # Hound MCP — keyless web search + stealth fetch/crawl/PDF (the web-search
 # engine). Stays outside mise for the [all] extra and the browser download.
 install_hound() {
+    # mise's python carries no pipx, so prefer one already on PATH and only fall
+    # back to bootstrapping it into the interpreter's user site.
+    local pipx
+    pipx=$(command -v pipx || true)
+
+    if [[ -z "$pipx" ]]; then
+        printf 'Installing pipx...\n'
+        python3 -m pip install --user -q --upgrade pipx
+        pipx="$(python3 -m site --user-base)/bin/pipx"
+    fi
+
     if ! command -v hound >/dev/null 2>&1; then
         printf 'Installing hound-mcp...\n'
-        python3 -m pip install --user -q --upgrade pipx
-        python3 -m pipx install 'hound-mcp[all]'
+        "$pipx" install 'hound-mcp[all]'
     fi
 
     # Stealth browser Hound escalates to when a page blocks plain HTTP (idempotent)
     local hvenv
-    hvenv="$(python3 -m pipx environment --value PIPX_LOCAL_VENVS 2>/dev/null)/hound-mcp/bin"
+    hvenv="$("$pipx" environment --value PIPX_LOCAL_VENVS 2>/dev/null || true)/hound-mcp/bin"
     "$hvenv/patchright" install chromium 2>/dev/null \
         || "$hvenv/playwright" install chromium 2>/dev/null || true
 }

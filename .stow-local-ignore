@@ -1,6 +1,7 @@
 # Comments and blank lines are allowed.
 \.git
 \.gitignore
+\.DS_Store
 
 ^/README.*
 ^/install_deps\.sh
