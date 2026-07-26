@@ -1216,6 +1216,272 @@
       ],
       "resources": [],
       "cachedAt": 1784619390636
+    },
+    "deepwiki": {
+      "configHash": "e47c5fe8991ae0d84ec2ae853980023d93e3765f1b96605f3ca031d1108ef66e",
+      "tools": [
+        {
+          "name": "ask_question",
+          "description": "Ask any question about a GitHub repository and get an AI-powered, context-grounded response.",
+          "inputSchema": {
+            "type": "object",
+            "properties": {
+              "repoName": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "items": {
+                      "type": "string"
+                    },
+                    "type": "array"
+                  }
+                ],
+                "description": "GitHub repository or list of repositories (max 10) in owner/repo format."
+              },
+              "question": {
+                "description": "The question to ask about the repository.",
+                "type": "string"
+              }
+            },
+            "required": [
+              "repoName",
+              "question"
+            ]
+          }
+        },
+        {
+          "name": "read_wiki_contents",
+          "description": "View documentation about a GitHub repository.",
+          "inputSchema": {
+            "type": "object",
+            "properties": {
+              "repoName": {
+                "description": "GitHub repository in owner/repo format (e.g. \"facebook/react\").",
+                "type": "string"
+              }
+            },
+            "required": [
+              "repoName"
+            ]
+          }
+        },
+        {
+          "name": "read_wiki_structure",
+          "description": "Get a list of documentation topics for a GitHub repository.",
+          "inputSchema": {
+            "type": "object",
+            "properties": {
+              "repoName": {
+                "description": "GitHub repository in owner/repo format (e.g. \"facebook/react\").",
+                "type": "string"
+              }
+            },
+            "required": [
+              "repoName"
+            ]
+          }
+        }
+      ],
+      "resources": [],
+      "cachedAt": 1784864935608
+    },
+    "hound": {
+      "configHash": "1ec63161b9c2f71c2efbe08e19bec428bdda139432e2a97e2d29438461cdd0f8",
+      "tools": [
+        {
+          "name": "mcp_smart_fetch",
+          "description": "Fetch any URL or PDF. Auto anti-bot (HTTP -> stealthy). Use after smart_search to get page content - search gives URLs + snippets, smart_fetch gives the full page. \n\nPOWER FEATURES (save calls + tokens): \n- focus='query': extracts only BM25-relevant paragraphs. smart_fetch(url, focus='embedding dimension') on a 75-page paper returns only paragraphs about embeddings - one call instead of ten. Post-cache (no re-fetch). Re-pass same focus when paginating. \n- pages='9' or pages='1-5,9-12': specific PDF pages. PDFs return table_of_contents [{level,title,page,end_page}] - use page ranges to grab one section. \n- urls=['url1','url2']: parallel bulk fetch. Use when you need full page content from multiple specific URLs - one call, not N sequential ones. \n\nDECISION GUIDE: Have a URL + a specific question? focus='your question'. Have a PDF + know which page? pages='9'. Have a PDF + don't know which page? focus='your question' (BM25 finds it). Content behind click/form/scroll? actions=[{click:'button'},{fill:{selector:'#q',text:'x'}}]. Need the page's source links? include_links=true -> response.links.citations. \n\nRESPONSE SIGNALS (check before trusting content): \n- content_ok: True = real content. False = JS shell, login wall, or error - don't trust the content. \n- next_action: follow it - tells you the optimal next call (paginate, switch source, follow links). Empty = done. \n- page_type: 'list' = page links to the real content (fetch those links or smart_crawl). 'auth_wall'/'paywall' = content behind login/payment (switch sources). \n- is_truncated + next_offset: more content available. Use offset=next_offset to continue, or re-fetch with focus= to get only relevant parts. \n- content_age_days + is_stale: for current-state questions, seek newer sources if stale. \n- quality_score: PDF extraction quality 0-1. Low = garbled/CID corruption. \n\ncss_selector narrows WHERE to extract (DOM element). focus narrows WHAT to extract (relevance to query). Use both for maximum precision. DataDome/Akamai/Turnstile unbypassable -> switch sources, don't retry same URL. cache_ttl=0 forces fresh.",
+          "inputSchema": {
+            "type": "object",
+            "properties": {
+              "url": {
+                "type": "string",
+                "description": "URL to fetch"
+              },
+              "urls": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "description": "Multiple URLs (parallel; returns per-URL results)"
+              },
+              "extraction_type": {
+                "type": "string",
+                "enum": [
+                  "markdown",
+                  "html",
+                  "text",
+                  "article",
+                  "structured"
+                ],
+                "description": "Content format (default markdown). html = raw HTML."
+              },
+              "css_selector": {
+                "type": "string",
+                "description": "CSS selector to narrow extracted content (e.g. 'article', '.main'). Token saver."
+              },
+              "max_content_chars": {
+                "type": "integer",
+                "description": "Max chars of extracted content (default 40000, min 500). Lower = less context; rest paginated via offset/next_offset."
+              },
+              "timeout": {
+                "type": "integer",
+                "description": "Max request time in ms (default 30000)."
+              },
+              "cache_ttl": {
+                "type": "integer",
+                "description": "Cache seconds (default 3600). 0 = force fresh."
+              },
+              "force_fetcher": {
+                "type": "string",
+                "enum": [
+                  "http",
+                  "stealthy"
+                ],
+                "description": "Pin to one tier, skip auto-escalation. 'http' = fast HTTP-only (fails on JS/bot walls). 'stealthy' = anti-detect browser. Default = auto."
+              },
+              "offset": {
+                "type": "integer",
+                "description": "Char offset into extracted text to resume a truncated page. Use next_offset from previous response."
+              },
+              "pages": {
+                "type": "string",
+                "description": "PDF only: page spec like '1-5' or '1,3,5-7'. Use table_of_contents page/end_page ranges to pick. None = all pages."
+              },
+              "password": {
+                "type": "string",
+                "description": "PDF only: password for an encrypted PDF."
+              },
+              "focus": {
+                "type": "string",
+                "description": "Query-focused extraction: only BM25-relevant blocks returned. Context saver on long pages. Post-cache (no re-fetch). Re-pass same focus when paginating."
+              },
+              "actions": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "additionalProperties": true
+                },
+                "description": "Page interactions on stealthy browser AFTER load, BEFORE extraction. Forces stealthy + bypasses cache. Each item: {click:'css'}, {fill:{selector:'css',text:'x'}}, {press:'Enter'}, {wait:500}, {scroll:3}, {wait_selector:'css'}. Use for load-more, search forms, pagination, infinite scroll."
+              },
+              "options": {
+                "type": "object",
+                "description": "include_links (bool,false: response.links=citations/navigation/external+primary_source), include_media (bool,false: up to 20 page image URLs), proxy (str|dict), cookies (list), extra_headers (dict), useragent (str), wait (ms,0), network_idle (bool,SPAs), headless (bool,true), respect_robots (bool,false), real_chrome/solve_cloudflare/block_webrtc/hide_canvas/main_content_only/use_trafilatura (anti-detect tuning, good defaults, rarely needed).",
+                "additionalProperties": true
+              }
+            }
+          }
+        },
+        {
+          "name": "mcp_smart_crawl",
+          "description": "Deep-crawl a site: best-first same-domain walk, each page as markdown + content_ok + page_type. List pages -> structured link list. \n\nWHEN TO USE: Multi-page docs, API references, or when you need many pages from one domain. For single pages, use smart_fetch. For multi-source research across different sites, search broadly then smart_fetch the best results. \n\nTWO-PHASE CRAWL (most efficient): sitemap=true (in options) maps all URLs from sitemap.xml in one fetch -> see the full URL list -> crawl_urls=[urls you need] to fetch only those pages. Avoids crawling irrelevant pages. sitemap='auto' = use sitemap if present else BFS. discover_only=true = URL map only (same as sitemap=true but no sitemap fetch). \n\nfocus='query' makes the crawl prioritize relevant pages AND focus-filters each page's content - use for large doc sites to save tokens. Caps: max_pages (10), max_depth (2), max_total_chars (token budget), deadline_ms. Reuses smart_fetch anti-bot + cache.",
+          "inputSchema": {
+            "type": "object",
+            "properties": {
+              "url": {
+                "type": "string",
+                "description": "Start URL (crawl stays on this domain)"
+              },
+              "discover_only": {
+                "type": "boolean",
+                "description": "true = return URL map only, no page content. For big sites prefer options sitemap=true (one-fetch map)."
+              },
+              "focus": {
+                "type": "string",
+                "description": "Query: prioritize crawling links relevant to this + focus-filter each page. Token saver on doc sites."
+              },
+              "crawl_urls": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "description": "Chosen subset of URLs to fetch (second-phase selective crawl, no re-discovery). Use after sitemap=true or discover_only=true."
+              },
+              "options": {
+                "type": "object",
+                "description": "sitemap (true|'auto'|false,false: true=map from sitemap.xml in one fetch; 'auto'=use if present else BFS), max_pages (1-100,10), max_depth (0-5,2), path_include (list of path prefixes), path_exclude (list to skip), max_content_chars_per (8000), max_total_chars (token budget), concurrency (1-5,3), cache_ttl (3600;0=fresh), respect_robots (false), force_fetcher ('http'|'stealthy'), timeout (ms,30000), deadline_ms (120000).",
+                "additionalProperties": true
+              }
+            },
+            "required": [
+              "url"
+            ]
+          }
+        },
+        {
+          "name": "mcp_screenshot",
+          "description": "Screenshot a URL as an image. Multimodal agents only (content as images/canvas/visual layout). Text agents: use smart_fetch. Stealthy browser auto-managed.",
+          "inputSchema": {
+            "type": "object",
+            "properties": {
+              "url": {
+                "type": "string",
+                "description": "URL to screenshot"
+              },
+              "session_id": {
+                "type": "string",
+                "description": "Optional: reuse a specific open browser session. Omit to auto-manage."
+              },
+              "options": {
+                "type": "object",
+                "description": "full_page (bool,false), image_type (png|jpeg,png), quality (0-100,jpeg), wait (ms), wait_selector (css), network_idle (bool), timeout (ms,30000).",
+                "additionalProperties": true
+              }
+            },
+            "required": [
+              "url"
+            ]
+          }
+        },
+        {
+          "name": "mcp_smart_search",
+          "description": "Keyless web search (no API key, no account). 10 general backends in parallel (ddg,brave,mojeek,yahoo,yandex,startpage,google,qwant + opt-in wikipedia,grokipedia) + auto-fired specialized JSON-API backends based on query intent: Semantic Scholar (200M+ papers, AI-ranked, for research/factual queries), GitHub Search (repos sorted by stars, for code queries), Hacker News (tech community news/discussions, for news/howto queries). All run in parallel (zero added latency) and merge into the same ranking pipeline. Neural-reranked + intent-aware multi-query fan-out (detects query intent, sends expanded query variants to diversity engines for wider recall at zero added latency or request count) + six-signal ranking (cross-variant consensus + domain reputation + answer-signal scoring + title relevance + URL relevance) + result diversity (max 2 per domain in top results). Returns URLs + ranking + snippets, NOT page content. After search, smart_fetch the 1-2 best results with focus='your question' to get page content. \n\nBYOK: if you have configured search API keys (Serper, Tavily, Exa, Firecrawl, TinyFish) via `hound keys add` or env vars (HOUND_SEARCH_*_KEYS), those providers become the primary search source with key rotation and automatic fallback to this keyless search. \n\nANTI-PATTERN: Don't search for something you already have a URL for - use smart_fetch with focus= instead. Don't do one search per sub-fact - one broad search + 1-2 targeted fetches is enough. Don't fetch every search result. \n\nFILTERS (in options): site='domain.com' restricts to one domain. exclude_sites=['pinterest.com'] removes noise. freshness='day|week|month|year' for time-sensitive queries. page=0-10 for pagination. location/language/region for geo. \n\nRESULT FIELDS: relevance_score (0-1), fetch_relevance (high/med/low - fetch high first), engines_consensus (how many independent indexes returned this URL - higher = more authoritative; cross-variant consensus from multi-query fan-out strengthens this), source_type (docs|paper|repo|blog|forum|reference|news|other - pick the right source type), related_queries (follow-up queries from result titles+snippets).",
+          "inputSchema": {
+            "type": "object",
+            "properties": {
+              "query": {
+                "type": "string",
+                "description": "Search query"
+              },
+              "options": {
+                "type": "object",
+                "description": "max_results (1-50,6), cache_ttl (300), mode (auto|neural|find_similar; auto=neural if [all]+model else consensus; find_similar needs url=), engines (list, default: ddg,brave,mojeek,yahoo,yandex,startpage,google,qwant; add 'wikipedia'/'grokipedia'), site (domain restrict), exclude_sites (list), location, language (2-letter), region, page (0-10), freshness (day|week|month|year), url (for find_similar).",
+                "additionalProperties": true
+              }
+            },
+            "required": [
+              "query"
+            ]
+          }
+        },
+        {
+          "name": "cache_clear",
+          "description": "Clear fetch cache. all=true wipes all (default: expired only). To re-fetch one URL fresh, pass cache_ttl=0 to smart_fetch/smart_crawl instead. Cache stores extracted text per URL+extraction_type+css_selector+pages (+ per query+filters for search); default TTL 1hr.",
+          "inputSchema": {
+            "type": "object",
+            "properties": {
+              "all": {
+                "type": "boolean",
+                "description": "Wipe all (default: expired only)"
+              }
+            }
+          }
+        },
+        {
+          "name": "version",
+          "description": "Hound version + update status.",
+          "inputSchema": {
+            "type": "object",
+            "properties": {}
+          }
+        }
+      ],
+      "resources": [],
+      "prompts": [],
+      "instructions": "",
+      "cachedAt": 1785040433778
     }
   }
 }
