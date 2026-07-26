@@ -66,7 +66,7 @@ the base lsp/lint/dap specs via lazy.nvim opts fragments.
 
 ## Herdr
 
-Herdr is the multiplexer, replacing tmux. Configuration lives in
+Herdr is the multiplexer. Configuration lives in
 `dot-config/herdr/config.toml`; plugins are declared in
 `dot-config/herdr/plugins.list` — one `OWNER/REPO` per line — and installed by
 `install_deps.sh`. Plugins shell out to `wt`, `fzf`, `jq`, and `git`, all

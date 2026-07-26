@@ -6,8 +6,7 @@ ARG DEV_GID=1000
 ENV TERM=xterm-256color \
     COLORTERM=truecolor \
     DOTFILES_DIR=/home/dev/dotfiles \
-    DOTFILES_REPO=https://github.com/HasarAli/dotfiles.git \
-    TPM_REPO=https://github.com/tmux-plugins/tpm
+    DOTFILES_REPO=https://github.com/HasarAli/dotfiles.git
 
 RUN printf '%s\n' 'Acquire::Check-Valid-Until "false";' > /etc/apt/apt.conf.d/99no-check-valid-until
 
@@ -27,7 +26,6 @@ RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
         neovim \
         ripgrep \
         stow \
-        tmux \
         tree-sitter-cli \
         unzip; \
     ln -sf /usr/bin/fdfind /usr/local/bin/fd
