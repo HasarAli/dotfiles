@@ -7,7 +7,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash '/Users/hali/.claude/hooks/herdr-agent-state.sh' session",
+            "command": "[ -x \"$HOME/.claude/hooks/herdr-agent-state.sh\" ] && \"$HOME/.claude/hooks/herdr-agent-state.sh\" session; true",
             "timeout": 10
           }
         ]
@@ -18,6 +18,6 @@
     "type": "command",
     "command": "~/.claude/statusline.sh"
   },
-  "effortLevel": "medium",
+  "effortLevel": "low",
   "theme": "dark"
 }
