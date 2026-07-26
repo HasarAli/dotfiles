@@ -1,8 +1,9 @@
 # Global tool versions. Per-project mise.toml files override these tool by tool;
 # anything a project does not name falls through to here.
 #
-# Versions float on "latest" and mise.lock records what a machine actually got,
-# so a reinstall reproduces this box instead of picking up whatever shipped since.
+# Versions float on "latest": a fresh box gets whatever shipped that day. Lockfiles
+# are a project-config feature — mise refuses to lock the global config — so pin a
+# tool here the day its drift bites.
 
 [tools]
 neovim = "latest"
@@ -23,5 +24,4 @@ fzf = "latest"
 "github:ogulcancelik/herdr" = { version = "latest", os = ["linux"] }
 
 [settings]
-lockfile = true
 experimental = true    # required by the github and npm backends
