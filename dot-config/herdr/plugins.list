@@ -1,0 +1,7 @@
+# Herdr plugins, one OWNER/REPO per line. install_deps.sh installs each.
+#
+# This is the declarative source; plugins.json is herdr's own registry, written
+# at install time with machine-absolute paths, so it stays untracked.
+
+lmilojevicc/herdr-splits.nvim
+devashish2203/herdr-worktrunk

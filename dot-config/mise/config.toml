@@ -1,0 +1,27 @@
+# Global tool versions. Per-project mise.toml files override these tool by tool;
+# anything a project does not name falls through to here.
+#
+# Versions float on "latest" and mise.lock records what a machine actually got,
+# so a reinstall reproduces this box instead of picking up whatever shipped since.
+
+[tools]
+neovim = "latest"
+node = "latest"
+fd = "latest"
+ripgrep = "latest"
+tree-sitter = "latest"
+python = "latest"
+sops = "latest"
+"npm:@earendil-works/pi-coding-agent" = "latest"
+
+# herdr plugin dependencies: the worktrunk plugin shells out to `wt` and `fzf`,
+# `jq` and `git` come from the system packages.
+fzf = "latest"
+"github:max-sixty/worktrunk" = { version = "latest", exe = "wt" }
+
+# herdr publishes Linux release assets only; macOS gets it from Homebrew.
+"github:ogulcancelik/herdr" = { version = "latest", os = ["linux"] }
+
+[settings]
+lockfile = true
+experimental = true    # required by the github and npm backends

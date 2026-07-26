@@ -1,7 +1,9 @@
 .claude/
 dot-pi/agent/sessions/
 
-# herdr runtime (plugins are cloned by `herdr plugin install` from plugins.json)
+# herdr runtime. plugins.list is the tracked source; plugins.json is herdr's own
+# registry, written at install time with machine-absolute paths.
+dot-config/herdr/plugins.json
 dot-config/herdr/*.log
 dot-config/herdr/*.sock
 dot-config/herdr/session.json
