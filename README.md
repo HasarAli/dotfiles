@@ -8,7 +8,7 @@ Requires **Debian, Ubuntu, or macOS**.
 
 ```sh
 git clone <repo-url> dotfiles
-dotfiles/install_deps.sh    # add --lang-servers if enabling nvim language modules
+dotfiles/install_deps.sh
 ```
 
 Run it as yourself, not under `sudo` — it escalates per command for system
@@ -18,6 +18,17 @@ fine where root is the main user (dev containers); running it via `sudo` from a
 normal account is rejected, since the dotfiles would land in root's home.
 
 The one step it cannot do for you is the age identity — see Secrets below.
+
+## Runtimes
+
+Apt and Homebrew supply only system packages. Everything versioned — neovim,
+node, python, sops, pi, herdr — comes from [mise](https://mise.jdx.dev),
+declared in `dot-config/mise/config.toml`. One manifest, both platforms, no root.
+
+Versions float on `latest`; pin one by naming its version there.
+
+A project overrides these with its own `mise.toml`, and the PATH swaps on `cd`.
+Run `mise trust` in the repo first — a `mise.toml` can run commands.
 
 ## Secrets
 
@@ -46,9 +57,8 @@ echo 'python,lua,bash,data' > ~/.config/nvim-langs
 | `bash`       | bash-language-server                                     |
 | `data`       | jsonls, yamlls, marksman, prettier                       |
 
-`python` needs only `python3-venv` (its tools install via pip — no node);
-`typescript`, `bash`, and `data`'s jsonls/yamlls/prettier need `nodejs`/`npm`.
-`install_deps.sh --lang-servers` installs all three. Mason installs the tools on the
+Node and python come from mise, so every module works on a stock install. Mason
+installs the tools on the
 next nvim launch; disabling a module stops loading its servers but doesn't
 delete installed binaries (`:MasonUninstall <pkg>` if you want them gone).
 Modules live in `dot-config/nvim/lua/langs/` — one file per language, extending
@@ -58,8 +68,11 @@ the base lsp/lint/dap specs via lazy.nvim opts fragments.
 
 Herdr is the multiplexer, replacing tmux. Configuration lives in
 `dot-config/herdr/config.toml`; plugins are declared in
-`dot-config/herdr/plugins.json` and cloned by `herdr plugin install` (run for
-you by `install_deps.sh`).
+`dot-config/herdr/plugins.list` — one `OWNER/REPO` per line — and installed by
+`install_deps.sh`. Plugins shell out to `wt`, `fzf`, `jq`, and `git`, all
+installed for you.
+
+herdr's own `plugins.json` is machine-specific and stays untracked.
 
 ## Bash
 
