@@ -4,6 +4,11 @@ set -euo pipefail
 
 readonly CACHE_DIR="/var/cache/dotfiles-setup"
 readonly TMP_DIR="/tmp/dotfiles-setup"
+readonly DOTFILES_DIR="$(cd -P "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+# Escalation is per-command: the system packages need root, the stow tree and
+# the agent config under $HOME must not have it.
+SUDO=""
 
 cleanup() {
     rm -rf -- "${TMP_DIR:?}"/*
@@ -33,6 +38,28 @@ validate_not_sourced() {
     fi
 }
 
+# Root is a legitimate main user (dev containers); being root *via sudo* is not,
+# because the dotfiles would land in root's home instead of the invoker's.
+configure_privilege() {
+    if [[ "$(id -u)" -eq 0 ]]; then
+        if [[ -n "${SUDO_USER:-}" ]]; then
+            printf 'Error: Do not run this under sudo; run it as %s and let it escalate per command.\n' \
+                "$SUDO_USER" >&2
+            return 1
+        fi
+
+        SUDO=""
+        return 0
+    fi
+
+    if ! command -v sudo >/dev/null 2>&1; then
+        printf 'Error: sudo not found; it is needed to install system packages.\n' >&2
+        return 1
+    fi
+
+    SUDO="sudo"
+}
+
 detect_os() {
     case "$(uname -s)" in
         Darwin) printf 'macos\n' ;;
@@ -52,7 +79,8 @@ detect_os() {
 }
 
 prepare_directories() {
-    mkdir -p "$CACHE_DIR"
+    $SUDO mkdir -p "$CACHE_DIR"
+    $SUDO chown "$(id -u):$(id -g)" "$CACHE_DIR"
     mkdir -p "$TMP_DIR"
 }
 
@@ -150,7 +178,7 @@ create_symlink() {
         return 1
     fi
 
-    ln -sf -- "$source" "$target"
+    $SUDO ln -sf -- "$source" "$target"
 }
 
 install_herdr() {
@@ -192,6 +220,49 @@ install_herdr() {
     create_symlink "$cached" "/usr/local/bin/herdr"
 
     printf 'Installed herdr: %s\n' "$(herdr --version 2>&1)"
+}
+
+# Debian does not package sops, so it comes from the upstream release.
+install_sops() {
+    local arch
+    local version="3.13.3"
+    local arch_name
+    local filename
+    local url
+    local cached
+    local sha256
+
+    if command -v sops >/dev/null 2>&1; then
+        printf 'sops already installed: %s\n' "$(sops --version 2>&1 | head -n1)"
+        return 0
+    fi
+
+    arch=$(get_arch) || return 1
+
+    case "$arch" in
+        x86_64)
+            arch_name="amd64"
+            sha256="e5bec3346a873ae91d871550f3e698c1aad962aff462a080e40f25fde17fef6b"
+            ;;
+        aarch64)
+            arch_name="arm64"
+            sha256="53b0abacd38ef1b12a66d6c100956691b9cefce018d91f81e73ddf7438b94d77"
+            ;;
+    esac
+
+    filename="sops-v${version}.linux.${arch_name}"
+    url="https://github.com/getsops/sops/releases/download/v${version}/${filename}"
+    cached="${CACHE_DIR}/sops-${version}-${arch}"
+
+    if [[ ! -x "$cached" ]]; then
+        download_file "$filename" "$url" "$sha256"
+        mv -- "${TMP_DIR}/${filename}" "$cached"
+        chmod +x "$cached"
+    fi
+
+    create_symlink "$cached" "/usr/local/bin/sops"
+
+    printf 'Installed sops: %s\n' "$(sops --version 2>&1 | head -n1)"
 }
 
 install_neovim() {
@@ -249,27 +320,37 @@ install_macos() {
 }
 
 install_debian() {
-    if [[ "$(id -u)" -ne 0 ]]; then
-        printf 'Error: This script must be run as root (e.g. sudo) on Debian.\n' >&2
-        return 1
-    fi
-
     prepare_directories
 
     printf 'Installing packages via apt...\n'
-    apt-get update -qq
-    apt-get install -qq -y age bash-completion curl git jq sops stow
+    $SUDO apt-get update -qq
+    $SUDO apt-get install -qq -y age bash-completion curl git jq stow
 
     # pi needs node; install it at the OS level even without --lang-servers
     if ! command -v node >/dev/null 2>&1; then
-        apt-get install -qq -y nodejs npm
+        $SUDO apt-get install -qq -y nodejs npm
     fi
     if ! command -v pi >/dev/null 2>&1; then
-        npm install -g @earendil-works/pi-coding-agent
+        $SUDO npm install -g @earendil-works/pi-coding-agent
     fi
 
     install_herdr
+    install_sops
     install_neovim
+}
+
+# Everything below runs unprivileged: it writes to the stow tree and $HOME.
+link_dotfiles() {
+    printf 'Stowing dotfiles into %s...\n' "$HOME"
+    stow -R --dotfiles -t "$HOME" -d "$DOTFILES_DIR" .
+}
+
+install_agent_deps() {
+    printf 'Installing pi extension dependencies...\n'
+    npm install --prefix "${DOTFILES_DIR}/dot-pi/agent/npm" --silent
+
+    printf 'Installing herdr plugins...\n'
+    herdr plugin install
 }
 
 main() {
@@ -286,6 +367,7 @@ main() {
     fi
 
     validate_not_sourced
+    configure_privilege
 
     local os
     os=$(detect_os) || return 1
@@ -301,7 +383,7 @@ main() {
                 brew install node python3
                 ;;
             debian)
-                apt-get install -qq -y nodejs npm python3-venv
+                $SUDO apt-get install -qq -y nodejs npm python3-venv
                 ;;
         esac
     fi
@@ -316,7 +398,11 @@ main() {
     "$hvenv/patchright" install chromium 2>/dev/null \
         || "$hvenv/playwright" install chromium 2>/dev/null || true
 
+    link_dotfiles
+    install_agent_deps
+
     printf '\nAll dependencies installed.\n'
+    printf 'Remaining manual step: copy the age identity to ~/.config/age/keys.txt\n'
 }
 
 main "$@"
