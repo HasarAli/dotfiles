@@ -10,5 +10,5 @@
     "npm:pi-permission-system"
   ],
   "defaultProvider": "openai",
-  "defaultModel": "gpt-5.6-luna"
+  "defaultModel": "gpt-5.6-sol"
 }
