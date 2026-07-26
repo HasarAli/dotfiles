@@ -1,6 +1,12 @@
-dot-config/tmux/plugins/
 .claude/
 dot-pi/agent/sessions/
+
+# herdr runtime (plugins are cloned by `herdr plugin install` from plugins.json)
+dot-config/herdr/*.log
+dot-config/herdr/*.sock
+dot-config/herdr/session.json
+dot-config/herdr/.plugins.lock
+dot-config/herdr/plugins/
 
 # decrypted secrets never enter the repo
 secrets/*.dec*

@@ -5,6 +5,7 @@
 # small pre-resize geometry.
 [window]
 startup_mode = "Maximized"
+option_as_alt = "Both"
 
 [font.normal]
 family = "JetBrainsMono Nerd Font Mono"
