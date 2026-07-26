@@ -1,19 +1,23 @@
 # Dotfiles
 
-Bash, Tmux, Neovim, ttyd tuned for devpods. One command to install.
+Bash, Herdr, Neovim, pi tuned for devpods. One command to install.
 
 ## Setup
 
-Requires **Debian or Ubuntu** (the install script uses `apt-get`).
+Requires **Debian, Ubuntu, or macOS**.
 
 ```sh
 git clone <repo-url> dotfiles
-sudo bash dotfiles/install_deps.sh    # add --lang-servers if enabling nvim language modules
-stow -v --dotfiles -t $HOME -d <path to dotfiles> .
-git clone --depth 1 https://github.com/tmux-plugins/tpm ~/.config/tmux/plugins/tpm
+dotfiles/install_deps.sh    # add --lang-servers if enabling nvim language modules
 ```
 
-Then launch tmux and press `<prefix> I` once to install tmux plugins.
+Run it as yourself, not under `sudo` — it escalates per command for system
+packages, then stows the tree, installs the pi extension dependencies, and
+clones the herdr plugins into `~/.config/herdr/plugins/`. Running as root is
+fine where root is the main user (dev containers); running it via `sudo` from a
+normal account is rejected, since the dotfiles would land in root's home.
+
+The one step it cannot do for you is the age identity — see Secrets below.
 
 ## Secrets
 
@@ -50,63 +54,12 @@ delete installed binaries (`:MasonUninstall <pkg>` if you want them gone).
 Modules live in `dot-config/nvim/lua/langs/` — one file per language, extending
 the base lsp/lint/dap specs via lazy.nvim opts fragments.
 
-`install_deps.sh` must run as root. TPM is cloned into your home after stow so `tmux.conf` can load it from `~/.config/tmux/plugins/tpm` (see the `run` line at the bottom of `dot-config/tmux/tmux.conf`).
+## Herdr
 
-## Tmux
-
-Catppuccin Mocha statusline matching the ttyd terminal theme. Prefix is `C-Space` — thumb + pinky, no hand travel.
-
-- Bash auto-attaches to a session called `main` on login, so new ttyd tabs drop back into the same layout.
-- Mouse-select or `y` in copy-mode emits OSC 52 — text flows straight into your clipboard.
-- Mouse on: click to focus a pane, drag borders to resize panes.
-- Active pane pops: pink border + brighter window content; inactive panes are dimmed.
-- Ergonomics tuned inline: 0ms `Esc` (no nvim lag), 50k-line scrollback, aggressive resize across clients.
-
-### Navigation
-
-| Key                         | Action                                                    |
-| --------------------------- | --------------------------------------------------------- |
-| `C-h/j/k/l`                 | Move between panes (seamless with nvim splits, no prefix) |
-| `<prefix> h` / `<prefix> l` | Previous/next window                                      |
-| `Shift-Left/Right`          | Previous/next window (no prefix)                          |
-| `<prefix> n` / `<prefix> p` | Next/prev window                                          |
-
-### Panes & windows
-
-Splits open in the current pane's working directory.
-
-| Key                          | Action                                           |
-| ---------------------------- | ------------------------------------------------ |
-| `<prefix> %` / `<prefix> \|` | Split left/right                                 |
-| `<prefix> "` / `<prefix> -`  | Split top/bottom                                 |
-| `<prefix> c`                 | New window (in current directory)                |
-| `<prefix> m`                 | Mark current pane (tmux default)                 |
-| `<prefix> \` / `<prefix> _`  | Pull marked pane in side-by-side / stacked       |
-| `<prefix> Tab`               | Swap current pane with the marked pane           |
-| `<prefix> k`                 | Kill current window (confirm)                    |
-| `<prefix> K`                 | Kill all other windows (confirm)                 |
-| `<prefix> X`                 | Kill all other panes in current window (confirm) |
-| `<prefix> I`                 | Install tmux plugins                             |
-| `<prefix> r`                 | Reload `tmux.conf`                               |
-
-### Session persistence
-
-`tmux-resurrect` + `tmux-continuum` keep sessions across reboots and ttyd restarts. Pane contents and `watch` processes are captured; sessions live in `~/.local/share/tmux/sessions`.
-
-- `<prefix> S` — save now
-- `<prefix> R` — restore last save
-- Auto-save every 15 min, auto-restore on tmux start.
-
-### Window status pill
-
-Background work in another window flags itself in the statusline and terminal title:
-
-- Red pill (`needs-input`) on the window — something is waiting on you.
-- Blue pill (`done`) — a long-running task finished.
-- Title gets a `(!N,✓M)` prefix tallying both states across windows.
-- Pills clear the moment you focus the window (pane switch, window switch, or browser tab focus).
-
-State is driven by `dot-config/tmux/utils/tmux-notify/tmux_notify.py` — call it from prompt hooks or long-running scripts to set/clear `@notify_state`.
+Herdr is the multiplexer, replacing tmux. Configuration lives in
+`dot-config/herdr/config.toml`; plugins are declared in
+`dot-config/herdr/plugins.json` and cloned by `herdr plugin install` (run for
+you by `install_deps.sh`).
 
 ## Bash
 
@@ -170,4 +123,4 @@ Full list in `dot-bash_aliases`. Most-used:
 | `grh` / `grhh`                | `reset HEAD` / `reset --hard HEAD`              |
 | `gf` / `gfa`                  | `fetch` / `fetch --all`                         |
 
-On login, bash auto-attaches to a tmux session named `main`.
+On login, bash launches herdr when it is installed and not already inside a session.

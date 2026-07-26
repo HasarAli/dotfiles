@@ -72,10 +72,25 @@ fi
 # Aliases and tools
 [ -f ~/.bash_aliases ] && . ~/.bash_aliases
 
+# This file is stowed, so its own symlink chain locates the repo.
+if [ -z "${DOTFILES:-}" ]; then
+    _df_src=${BASH_SOURCE[0]}
+    while [ -L "$_df_src" ]; do
+        _df_target=$(readlink "$_df_src")
+        case $_df_target in
+            /*) _df_src=$_df_target ;;
+            *)  _df_src=$(dirname "$_df_src")/$_df_target ;;
+        esac
+    done
+    DOTFILES=$(cd -P "$(dirname "$_df_src")" && pwd)
+    unset _df_src _df_target
+fi
+export DOTFILES
+
 # API keys (sops+age encrypted; key at ~/.config/age/keys.txt)
 export SOPS_AGE_KEY_FILE=~/.config/age/keys.txt
-if command -v sops &>/dev/null && [ -f ~/Projects/dotfiles/secrets/env.yaml ]; then
-    eval "$(sops -d --output-type dotenv ~/Projects/dotfiles/secrets/env.yaml 2>/dev/null | sed 's/^/export /')"
+if command -v sops &>/dev/null && [ -f "$DOTFILES/secrets/env.yaml" ]; then
+    eval "$(sops -d --output-type dotenv "$DOTFILES/secrets/env.yaml" 2>/dev/null | sed 's/^/export /')"
 fi
 
 # Hound BYOK — reuse existing keys to escalate past its keyless search when needed
