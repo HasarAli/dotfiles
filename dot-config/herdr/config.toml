@@ -1,40 +1,46 @@
 onboarding = false
-# herdr configuration — managed via dotfiles (stow)
 
 [theme]
 name = "catppuccin"
 
-auto_switch = false
+auto_switch = false  # Follow host terminal light/dark → switches theme; off = manual only
+
 [keys]
-# Ctrl+Space prefix (matching tmux muscle memory)
 prefix = "ctrl+space"
 
-# Splits: hybrid - / \ (tmux fallback)
-# split_horizontal = "prefix+-" is herdr default; omitted
 split_vertical = "prefix+\\"
 
-# Tab navigation: h/l matches tmux window prev/next
-previous_tab = "prefix+h"
-next_tab = "prefix+l"
+previous_tab = ["prefix+h", "shift+left"]
+next_tab = ["prefix+l", "shift+right"]
 
-# Workspace navigation: j/k
-previous_workspace = "prefix+j"
-next_workspace = "prefix+k"
+previous_workspace = ["prefix+k", "shift+up"]
+next_workspace = ["prefix+j", "shift+down"]
 
-# close_tab = "prefix+shift+x" is herdr default; omitted
+previous_agent = "ctrl+up"
+next_agent = "ctrl+down"
 
-# Agent focus: 1..9 (overrides default switch_tab since tabs use h/l)
-focus_agent = "prefix+1..9"
-switch_tab = ""
+switch_tab = "prefix+1..9"
+focus_agent = ""
+switch_workspace = ""
+navigate_workspace_up = ""
+navigate_workspace_down = ""
+cycle_pane_next = ""
+cycle_pane_previous = ""
+workspace_picker = ""
+
+new_workspace = "prefix+w"
+close_workspace = "prefix+q"
+new_tab = "prefix+t"
 
 # Detach: d (tmux style)
 detach = "prefix+d"
 
-# Disable focus_pane defaults — Ctrl+hjkl (vim-herdr-navigation) handles pane nav
+# Disable focus_pane defaults — Ctrl+hjkl (herdr-splits.nvim) handles pane nav
 focus_pane_left = ""
 focus_pane_down = ""
 focus_pane_up = ""
 focus_pane_right = ""
+resize_mode = ""  # unset — prefix+r used for worktree remove
 
 # ── Plugin: herdr-splits.nvim ──
 # Seamless Ctrl+hjkl nav + Alt+hjkl resize between Neovim splits & Herdr panes.
@@ -45,25 +51,25 @@ focus_pane_right = ""
 key = "ctrl+h"
 type = "plugin_action"
 command = "herdr-splits.nav-left"
-description = "Navigate left"
+description = "Pane focus: left"
 
 [[keys.command]]
 key = "ctrl+j"
 type = "plugin_action"
 command = "herdr-splits.nav-down"
-description = "Navigate down"
+description = "Pane focus: down"
 
 [[keys.command]]
 key = "ctrl+k"
 type = "plugin_action"
 command = "herdr-splits.nav-up"
-description = "Navigate up"
+description = "Pane focus: up"
 
 [[keys.command]]
 key = "ctrl+l"
 type = "plugin_action"
 command = "herdr-splits.nav-right"
-description = "Navigate right"
+description = "Pane focus: right"
 
 [[keys.command]]
 key = "alt+h"
@@ -95,29 +101,29 @@ description = "Resize right"
 # Install: herdr plugin install devashish2203/herdr-worktrunk --yes
 
 [[keys.command]]
-key = "prefix+shift+g"
+key = "prefix+n"
 type = "plugin_action"
 command = "worktrunk.open"
-description = "Worktree: switch / create from default branch"
+description = "Worktree: switch or create from default branch"
 
 [[keys.command]]
-key = "prefix+shift+c"
+key = "prefix+shift+n"
 type = "plugin_action"
 command = "worktrunk.open-current"
-description = "Worktree: switch / create from current branch"
+description = "Worktree: switch or create from current branch"
 
 [[keys.command]]
-key = "prefix+shift+d"
+key = "prefix+r"
 type = "plugin_action"
 command = "worktrunk.remove"
-description = "Worktree: remove"
+description = "Worktree: delete managed checkout"
 
 [ui]
 pane_borders = true
 pane_gaps = true
 
 [ui.toast]
-delivery = "system"
+delivery = "herdr"
 
 [experimental]
 switch_ascii_input_source_in_prefix = false
