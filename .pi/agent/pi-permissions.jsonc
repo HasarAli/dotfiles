@@ -1,0 +1,122 @@
+{
+  "$schema": "~/.pi/agent/npm/node_modules/pi-permission-system/schemas/permissions.schema.json",
+
+  "defaultPolicy": {
+    "tools": "ask",
+    "bash": "ask",
+    "mcp": "ask",
+    "skills": "ask",
+    "special": "ask"
+  },
+
+  "tools": {
+    // Read inside the project: silent
+    "read": "allow",
+    // Read outside the project: handled by special.external_directory below
+
+    // Grep/find/ls: safe discovery tools
+    "grep": "allow",
+    "find": "allow",
+    "ls": "allow",
+
+    // Modifications: prompt
+    "write": "ask",
+    "edit": "ask",
+
+    // File ops that are read-adjacent
+    "hypa_read": "allow",
+    "hypa_grep": "allow",
+    "hypa_find": "allow",
+    "hypa_ls": "allow",
+    "hypa_shell": "ask",
+
+    // Delegation and search
+    "web_search": "ask",
+    "ask_user_question": "allow"
+  },
+
+  "bash": {
+    // Safe read-only commands — silent
+    "ls *": "allow",
+    "cat *": "allow",
+    "head *": "allow",
+    "tail *": "allow",
+    "pwd": "allow",
+    "echo *": "allow",
+    "which *": "allow",
+    "type *": "allow",
+    "printf *": "allow",
+    "mkdir *": "allow",
+    "touch *": "allow",
+    "cp *": "allow",
+    "mv *": "allow",
+
+    // Git read ops — silent
+    "git status": "allow",
+    "git diff *": "allow",
+    "git log *": "allow",
+    "git branch *": "allow",
+    "git show *": "allow",
+    "git stash list": "allow",
+
+    // Git write ops — prompt
+    "git add *": "ask",
+    "git commit *": "ask",
+    "git push *": "ask",
+    "git pull *": "ask",
+    "git checkout *": "ask",
+    "git stash *": "ask",
+    "git merge *": "ask",
+    "git rebase *": "ask",
+    "git reset *": "ask",
+    "git rm *": "ask",
+
+    // Dangerous patterns — block hard
+    "rm -rf *": "deny",
+    "rm -rf /*": "deny",
+    "sudo rm *": "deny",
+    "mkfs*": "deny",
+    "dd *": "deny",
+
+    // Privilege escalation — prompt
+    "sudo *": "ask",
+    "chmod *": "ask",
+    "chown *": "ask",
+
+    // Pipe to dangerous destinations — prompt
+    "* | sudo *": "ask",
+    "* > /dev/*": "ask",
+
+    // Package management — prompt
+    "apt *": "ask",
+    "apt-get *": "ask",
+    "dnf *": "ask",
+    "yay *": "ask",
+    "paru *": "ask",
+    "pacman *": "ask",
+    "brew *": "ask",
+    "npm install *": "ask",
+    "npm publish *": "ask",
+    "pip install *": "ask",
+    "cargo install *": "ask",
+    "go install *": "ask",
+
+    // File removal (without -rf) — prompt
+    "rm *": "ask",
+
+    // Symlink operations (common in dotfiles with stow)
+    "stow *": "ask",
+    "ln -s *": "ask",
+    "ln *": "ask",
+
+    // Everything else — prompt
+    "*": "ask"
+  },
+
+  "special": {
+    // Reading files outside the project directory requires confirmation
+    "external_directory": "ask",
+    // Block external directory edits silently
+    "doom_loop": "deny"
+  }
+}
