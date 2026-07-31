@@ -19,6 +19,7 @@ sops = "latest"
 # `jq` and `git` come from the system packages.
 fzf = "latest"
 "github:max-sixty/worktrunk" = { version = "latest", exe = "wt" }
+"github:rtk-ai/rtk" = { version = "latest", exe = "rtk" }
 
 # herdr publishes Linux release assets only; macOS gets it from Homebrew.
 "github:ogulcancelik/herdr" = { version = "latest", os = ["linux"] }
