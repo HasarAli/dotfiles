@@ -6,5 +6,6 @@
 ^/README.*
 ^/install_deps\.sh
 ^/container
+^/macos
 ^/\.devcontainer
 \.pi
