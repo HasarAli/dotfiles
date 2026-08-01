@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!--
+  Owns the herdr server so launchd runs it inside the Aqua login session.
+  A server daemonized from a shell outlives that shell's security session, and
+  every pane it spawns then inherits a session with no login-keychain access —
+  claude and pi read their OAuth credentials from there, so they report
+  "please login" / "connection failed" for the rest of the machine's uptime.
+
+  Template: install_deps.sh fills in the placeholders below and writes the
+  result to ~/Library/LaunchAgents. launchd expands nothing itself, so every
+  path has to be absolute by the time it lands there.
+-->
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>local.herdr-server</string>
+
+    <key>ProgramArguments</key>
+    <array>
+        <string>@HERDR@</string>
+        <string>server</string>
+    </array>
+
+    <key>RunAtLoad</key>
+    <true/>
+
+    <key>KeepAlive</key>
+    <true/>
+
+    <key>EnvironmentVariables</key>
+    <dict>
+        <!-- launchd hands over a bare environment; panes need a usable shell
+             and a PATH that reaches the mise shims. -->
+        <key>SHELL</key>
+        <string>@SHELL@</string>
+        <key>PATH</key>
+        <string>@PATH@</string>
+    </dict>
+
+    <key>ProcessType</key>
+    <string>Interactive</string>
+
+    <key>StandardOutPath</key>
+    <string>@HOME@/.config/herdr/launchd.out.log</string>
+    <key>StandardErrorPath</key>
+    <string>@HOME@/.config/herdr/launchd.err.log</string>
+</dict>
+</plist>

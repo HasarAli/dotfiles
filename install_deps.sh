@@ -112,6 +112,32 @@ install_debian() {
     $SUDO apt-get install -qq -y age bash-completion curl git jq stow
 }
 
+# launchd owns the herdr server so it lives in the Aqua login session and keeps
+# login-keychain access; see the plist for what breaks otherwise. Runs after
+# stowing, which links the plist into ~/.config/herdr.
+install_herdr_agent() {
+    local target=$HOME/Library/LaunchAgents/local.herdr-server.plist
+    local herdr shell_bin path
+
+    herdr=$(command -v herdr) || {
+        printf 'Skipping the herdr LaunchAgent: herdr is not on PATH.\n' >&2
+        return 0
+    }
+    shell_bin=$(command -v bash)
+    path="$HOME/.local/share/mise/shims:$HOME/.local/bin:$(dirname "$herdr"):/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin"
+
+    printf 'Registering the herdr server LaunchAgent...\n'
+    mkdir -p "$HOME/Library/LaunchAgents" "$HOME/.config/herdr"
+    sed -e "s|@HOME@|$HOME|g" \
+        -e "s|@HERDR@|$herdr|g" \
+        -e "s|@SHELL@|$shell_bin|g" \
+        -e "s|@PATH@|$path|g" \
+        "$DOTFILES_DIR/macos/herdr-server.plist.in" >"$target"
+
+    launchctl bootout "gui/$UID/local.herdr-server" 2>/dev/null || true
+    launchctl bootstrap "gui/$UID" "$target"
+}
+
 link_dotfiles() {
     printf 'Stowing dotfiles into %s...\n' "$HOME"
     stow -R --dotfiles -t "$HOME" -d "$DOTFILES_DIR" .
@@ -214,6 +240,11 @@ main() {
     esac
 
     link_dotfiles
+
+    if [[ $os == macos ]]; then
+        install_herdr_agent
+    fi
+
     install_runtimes
     install_hound
     install_agent_deps
