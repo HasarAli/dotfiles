@@ -2,10 +2,8 @@
   "lastChangelogVersion": "0.82.1",
   "theme": "dark",
   "packages": [
-    "npm:@hypabolic/pi-hypa",
     "npm:pi-mcp-adapter",
     "npm:@tintinweb/pi-subagents",
-    "npm:@juicesharp/rpiv-ask-user-question",
     "npm:pi-deepseek-search",
     "npm:pi-permission-system"
   ],
