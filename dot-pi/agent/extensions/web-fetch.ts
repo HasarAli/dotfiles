@@ -1,5 +1,5 @@
 /**
- * fetch-url — one tool, `fetch_url`: read a URL without paying for the page.
+ * web-fetch — one tool, `web_fetch`: read a URL without paying for the page.
  *
  * Hound's smart_fetch does the retrieval (HTTP → Playwright → stealth escalation,
  * PDF/OCR, cache). What comes back to the agent depends on `prompt` and `raw`:
@@ -53,8 +53,8 @@ export default function (pi: ExtensionAPI) {
   pi.on("session_shutdown", () => hound.stop());
 
   pi.registerTool({
-    name: "fetch_url",
-    label: "Fetch URL",
+    name: "web_fetch",
+    label: "Web Fetch",
     description:
       "Read a web page or PDF. Handles JS-rendered pages, Cloudflare and anti-bot walls. " +
       "Pass `prompt` with what you need from the page — a model reads the full page and " +
@@ -155,7 +155,7 @@ const bodyOf = (page: Page): string => (page.content ?? []).join("\n");
 
 function geminiKey(): string {
   const key = process.env.GEMINI_API_KEY || process.env.GOOGLE_API_KEY;
-  if (!key) throw new Error("GEMINI_API_KEY (or GOOGLE_API_KEY) is not set; call fetch_url without `prompt` to get raw page text");
+  if (!key) throw new Error("GEMINI_API_KEY (or GOOGLE_API_KEY) is not set; call web_fetch without `prompt` to get raw page text");
   return key;
 }
 
@@ -224,7 +224,7 @@ class Hound {
 
   private connect(): Promise<Client> {
     this.client ??= (async () => {
-      const client = new Client({ name: "pi-fetch-url", version: "1" });
+      const client = new Client({ name: "pi-web-fetch", version: "1" });
       // The SDK otherwise passes a sudo-style env whitelist; hound reads more than that.
       const env = Object.fromEntries(Object.entries(process.env).filter(([, v]) => v !== undefined)) as Record<string, string>;
       await client.connect(new StdioClientTransport({ command: HOUND_BIN, env, stderr: "ignore" }));
