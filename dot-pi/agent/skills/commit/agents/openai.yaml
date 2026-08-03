@@ -1,0 +1,5 @@
+interface:
+  display_name: "Commit"
+  short_description: "Commit conventions — messages, atomicity, and rebase"
+policy:
+  allow_implicit_invocation: true

@@ -1,0 +1,19 @@
+{
+  "name": "subagent",
+  "version": "1.0.0",
+  "description": "Pruned fork of @tintinweb/pi-subagents — autonomous sub-agents for pi.",
+  "private": true,
+  "peerDependencies": {
+    "@earendil-works/pi-ai": ">=0.80.0",
+    "@earendil-works/pi-coding-agent": ">=0.80.0",
+    "@earendil-works/pi-tui": ">=0.80.0"
+  },
+  "dependencies": {
+    "@sinclair/typebox": "^0.34.49"
+  },
+  "pi": {
+    "extensions": [
+      "./index.ts"
+    ]
+  }
+}

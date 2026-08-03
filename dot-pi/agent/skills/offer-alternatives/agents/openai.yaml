@@ -1,0 +1,5 @@
+interface:
+  display_name: "Offer Alternatives"
+  short_description: "Offer alternative approaches before committing"
+policy:
+  allow_implicit_invocation: true

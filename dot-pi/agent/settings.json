@@ -3,10 +3,11 @@
   "theme": "dark",
   "packages": [
     "npm:pi-mcp-adapter",
-    "npm:@tintinweb/pi-subagents",
+    "/home/hasar/.pi/agent/extensions/subagent",
     "npm:pi-deepseek-search",
     "npm:pi-permission-system"
   ],
-  "defaultProvider": "anthropic",
-  "defaultModel": "claude-opus-5"
+  "defaultProvider": "deepseek",
+  "defaultModel": "deepseek-v4-pro",
+  "defaultThinkingLevel": "medium"
 }
