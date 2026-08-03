@@ -19,5 +19,51 @@
     "command": "~/.claude/statusline.sh"
   },
   "effortLevel": "low",
-  "theme": "dark"
+  "theme": "dark",
+  "disableWorkflows": true,
+  "disableRemoteControl": true,
+  "disableClaudeAiConnectors": true,
+  "disableArtifact": true,
+  "permissions": {
+    "deny": [
+      "TaskCreate",
+      "TaskUpdate",
+      "TaskList",
+      "TaskGet",
+      "EnterPlanMode",
+      "ExitPlanMode",
+      "AskUserQuestion",
+      "PushNotification",
+      "RemoteTrigger",
+      "EnterWorktree",
+      "ExitWorktree",
+      "DesignSync",
+      "NotebookEdit",
+      "ReportFindings",
+      "ScheduleWakeup",
+      "TaskOutput",
+      "CronCreate",
+      "CronDelete",
+      "CronList"
+    ]
+  },
+  "skillOverrides": {
+    "claude-in-chrome": "user-invocable-only",
+    "claude-api": "user-invocable-only",
+    "update-config": "user-invocable-only",
+    "dataviz": "off",
+    "artifact-design": "off",
+    "artifact-capabilities": "off",
+    "keybindings-help": "off",
+    "verify": "off",
+    "code-review": "off",
+    "simplify": "off",
+    "fewer-permission-prompts": "off",
+    "loop": "off",
+    "schedule": "off",
+    "run": "off",
+    "init": "off",
+    "review": "off",
+    "security-review": "off"
+  }
 }
