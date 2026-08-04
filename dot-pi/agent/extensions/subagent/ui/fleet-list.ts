@@ -1,6 +1,5 @@
 /**
  * fleet-list.ts — FleetView list rendered below the editor.
- * Pruned: no agent types, no invocation tags.
  *
  * Shows `main` + each running/queued subagent as a navigable list.
  * ↓/← activates the list; ↑/↓ navigate; Enter opens live conversation overlay;
@@ -8,9 +7,9 @@
  */
 
 import { Editor, isKeyRelease, Key, matchesKey, truncateToWidth, visibleWidth } from "@earendil-works/pi-tui";
-import type { AgentManager } from "../agent-manager.js";
-import type { AgentRecord } from "../types.js";
-import { getLifetimeTotal } from "../usage.js";
+import type { AgentManager } from "../engine/agent-manager.js";
+import type { AgentRecord } from "../shared/types.js";
+import { getLifetimeTotal } from "../shared/usage.js";
 import { type AgentActivity, type Theme } from "./agent-widget.js";
 import { ConversationViewer, VIEWPORT_HEIGHT_PCT } from "./conversation-viewer.js";
 

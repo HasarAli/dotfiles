@@ -1,7 +1,7 @@
 {
   "name": "subagent",
   "version": "1.0.0",
-  "description": "Pruned fork of @tintinweb/pi-subagents — autonomous sub-agents for pi.",
+  "description": "Autonomous sub-agents for pi.",
   "private": true,
   "peerDependencies": {
     "@earendil-works/pi-ai": ">=0.80.0",

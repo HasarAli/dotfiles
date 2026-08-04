@@ -1,7 +1,5 @@
 /**
  * agent-runner.ts — Core execution engine: creates sessions, runs agents, collects results.
- * Pruned: no type registry, agent configs, memory, skills, extension filtering,
- * persistSession, worktree isolation, or max_turns config.
  */
 
 import type { Model } from "@earendil-works/pi-ai";
@@ -16,7 +14,7 @@ import {
   SessionManager,
   SettingsManager,
 } from "@earendil-works/pi-coding-agent";
-import type { ThinkingLevel } from "./types.js";
+import type { ThinkingLevel } from "../shared/types.js";
 
 /**
  * Tool names registered by THIS extension. Subagents must NOT inherit these.

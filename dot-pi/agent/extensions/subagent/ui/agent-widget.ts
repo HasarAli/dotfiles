@@ -1,12 +1,12 @@
 /**
  * agent-widget.ts — Persistent widget showing running/completed agents above the editor.
- * Pruned: no agent types, no config lookups, no invocation tags.
  */
 
 import { truncateToWidth } from "@earendil-works/pi-tui";
-import type { AgentManager } from "../agent-manager.js";
-import type { WidgetMode } from "../types.js";
-import { getLifetimeTotal, getSessionContextPercent, type LifetimeUsage, type SessionLike } from "../usage.js";
+import type { AgentManager } from "../engine/agent-manager.js";
+import { formatTokens } from "../shared/helpers.js";
+import type { WidgetMode } from "../shared/types.js";
+import { getLifetimeTotal, getSessionContextPercent, type LifetimeUsage, type SessionLike } from "../shared/usage.js";
 
 const MAX_WIDGET_LINES = 12;
 
@@ -69,12 +69,6 @@ export function fgPreservingNestedStyles(theme: Theme, color: string, text: stri
   const styledEmpty = theme.fg(color, "");
   const styleStart = styledEmpty.replace(/\u001b\[(?:0|39)m/g, "");
   return theme.fg(color, text.replace(/\u001b\[(?:0|39)m/g, reset => `${reset}${styleStart}`));
-}
-
-export function formatTokens(count: number): string {
-  if (count >= 1_000_000) return `${(count / 1_000_000).toFixed(1)}M token`;
-  if (count >= 1_000) return `${(count / 1_000).toFixed(1)}k token`;
-  return `${count} token`;
 }
 
 export function formatSessionTokens(

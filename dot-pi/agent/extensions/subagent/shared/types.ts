@@ -1,11 +1,12 @@
 /**
- * types.ts — Type definitions for the pruned subagent system.
- * Forked from @tintinweb/pi-subagents, stripped of agent type registry,
- * scheduling, worktree, memory, cross-extension RPC, and group join.
+ * types.ts — Type definitions for the subagent system.
  */
 
-import type { AgentSession } from "@earendil-works/pi-coding-agent";
+import type { AgentSession, ExtensionCommandContext } from "@earendil-works/pi-coding-agent";
 import type { ThinkingLevel } from "@earendil-works/pi-ai";
+import type { AgentManager } from "../engine/agent-manager.js";
+import type { AgentActivity, AgentWidget } from "../ui/agent-widget.js";
+import type { FleetList } from "../ui/fleet-list.js";
 import type { LifetimeUsage } from "./usage.js";
 
 export type { ThinkingLevel };
@@ -58,4 +59,26 @@ export interface NotificationDetails {
   resultPreview: string;
   /** Additional agents in a group notification. */
   others?: NotificationDetails[];
+}
+
+/**
+ * Shared dependency bag passed into every capability's `register*(pi, deps)`
+ * entry point. Assembled once in index.ts (the composition root) so that
+ * capabilities never need to know how the engine/ui pieces were wired up.
+ */
+export interface SubagentDeps {
+  manager: AgentManager;
+  widget: AgentWidget;
+  fleet: FleetList;
+  agentActivity: Map<string, AgentActivity>;
+  cancelNudge: (id: string) => void;
+  sendIndividualNudge: (record: AgentRecord) => void;
+  QUEUE_WAIT_POLL_MS: number;
+  getWidgetMode: () => WidgetMode;
+  setWidgetMode: (m: WidgetMode) => void;
+  isFleetViewEnabled: () => boolean;
+  setFleetViewEnabled: (b: boolean) => void;
+  getOutputTranscriptDefault: () => boolean;
+  setOutputTranscript: (b: boolean) => void;
+  notifyApplied: (ctx: ExtensionCommandContext, msg: string) => void;
 }
