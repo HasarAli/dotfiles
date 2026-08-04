@@ -1,12 +1,11 @@
 /**
  * conversation-viewer.ts — Live conversation overlay for viewing agent sessions.
- * Pruned: no agent types, no invocation tags, no prompt mode labels.
  */
 
 import type { AgentSession } from "@earendil-works/pi-coding-agent";
 import { type Component, Input, matchesKey, type TUI, truncateToWidth, visibleWidth, wrapTextWithAnsi } from "@earendil-works/pi-tui";
-import type { AgentRecord } from "../types.js";
-import { getLifetimeTotal, getSessionContextPercent } from "../usage.js";
+import type { AgentRecord } from "../shared/types.js";
+import { getLifetimeTotal, getSessionContextPercent } from "../shared/usage.js";
 import type { Theme } from "./agent-widget.js";
 import { type AgentActivity, describeActivity, fgPreservingNestedStyles, formatDuration, formatSessionTokens } from "./agent-widget.js";
 import { createViewerKeys, type ViewerKeybindings, type ViewerKeys } from "./viewer-keys.js";

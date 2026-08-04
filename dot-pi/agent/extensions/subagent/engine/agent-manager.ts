@@ -12,8 +12,8 @@ import { isAbsolute } from "node:path";
 import type { Model } from "@earendil-works/pi-ai";
 import type { AgentSession, ExtensionAPI, ExtensionContext } from "@earendil-works/pi-coding-agent";
 import { resumeAgent, runAgent, type ToolActivity } from "./agent-runner.js";
-import type { AgentRecord, ThinkingLevel } from "./types.js";
-import { addUsage } from "./usage.js";
+import type { AgentRecord, ThinkingLevel } from "../shared/types.js";
+import { addUsage } from "../shared/usage.js";
 
 export type OnAgentComplete = (record: AgentRecord) => void;
 export type OnAgentStart = (record: AgentRecord) => void;
