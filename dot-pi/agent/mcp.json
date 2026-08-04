@@ -1,19 +1,30 @@
 {
   "mcpServers": {
-    "serena": {
-      "command": "/Users/hali/.local/bin/serena",
-      "args": ["start-mcp-server", "--context", "ide", "--project-from-cwd"]
-    },
     "context-mode": {
       "command": "npx",
       "args": ["-y", "context-mode"]
     },
     "chrome-devtools": {
       "command": "npx",
-      "args": ["-y", "chrome-devtools-mcp@latest"]
-    },
-    "deepwiki": {
-      "url": "https://mcp.deepwiki.com/mcp"
+      "args": [
+        "-y",
+        "chrome-devtools-mcp@latest",
+        "--auto-connect",
+        "--no-headless",
+        "--no-isolated",
+        "--viewport=1280x720",
+        "--screenshot-format=webp",
+        "--no-usage-statistics",
+        "--no-performance-crux",
+        "--no-category-performance",
+        "--no-category-emulation",
+        "--no-category-network",
+        "--no-memory-debugging",
+        "--experimental-page-id-routing",
+        "--experimental-vision",
+        "--experimental-screencast",
+        "--experimental-ffmpeg-path=/usr/bin/ffmpeg"
+      ]
     },
     "hound": {
       "command": "/Users/hali/.local/bin/hound"
