@@ -2,9 +2,6 @@
   "name": "pi-extensions",
   "private": true,
   "dependencies": {
-    "@hypabolic/pi-hypa": "^0.1.11",
-    "@juicesharp/rpiv-ask-user-question": "^2.0.0",
-    "@juicesharp/rpiv-web-tools": "^2.1.0",
     "@modelcontextprotocol/sdk": "^1.29.0",
     "pi-deepseek-search": "^1.0.15",
     "pi-mcp-adapter": "^2.15.0",
