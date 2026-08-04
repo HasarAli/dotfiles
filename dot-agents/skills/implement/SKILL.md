@@ -40,4 +40,4 @@ Use /code-review to review the work against the originating spec and the repo's 
 
 ## Code style
 
-Follow `~/.claude/code-style.md`. The repo's own conventions override it.
+Follow `~/.agents/code-style.md`. The repo's own conventions override it.
