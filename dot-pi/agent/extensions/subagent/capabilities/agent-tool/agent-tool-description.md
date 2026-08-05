@@ -1,22 +1,7 @@
-Launch an autonomous agent for complex, multi-step tasks.
+Launch or resume an autonomous agent for complex, multi-step tasks.
 
-## Routing
+Route by cost: send mechanical work to cheaper models and hard reasoning to stronger ones. Delegate context-heavy tasks (codebase spelunking, large files, sweeping edits, log triage) to an agent; use direct tools when you already know the exact target.
 
-Route by cost — mechanical work to cheaper models, hard reasoning to stronger ones. Anything that would flood your context (codebase spelunking, large files, sweeping edits, log triage) goes to a subagent; you keep the conclusion. When the target is already known, use direct tools.
+When you run an agent in the background, you will be notified on completion. Do not poll or sleep; keep working and use `get_subagent_result` with the agent ID if you need its output. Use `steer_subagent` to redirect a long-running background agent mid-run.
 
-## Breadcrumb
-
-No ancestor before `you` → you're doing the work directly. An ancestor present (e.g. `🐊 > you`) → you're a Subagent — spawn deeper only if it pays off. Child's first line shows the chain ending in `you`.
-
-## Parameters
-
-- `prompt` — Self-contained. The agent hasn't seen this conversation. Brief it like a smart colleague: what you're trying to accomplish, what you've learned, enough context for judgment calls. Terse command-style prompts produce shallow work.
-- `description` — 3-5 words, shown in UI.
-- `model` — "provider/modelId". Omit for parent.
-- `thinking` — off, minimal, low, medium, high, xhigh, max.
-- `run_in_background` — true to fire-and-forget. Notified on completion — never poll or sleep.
-- `resume` — Continue a previous agent by ID.
-
-## Parallel work
-
-One message, multiple Agent calls, `run_in_background: true` on each. Result goes to you — summarize for the user. Verify claimed code changes before reporting work done.
+Trust but verify: an agent's summary describes intent, not outcome. When it edits code, inspect the actual diff before claiming the work is done.
