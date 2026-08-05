@@ -1,9 +1,5 @@
 {
   "mcpServers": {
-    "context-mode": {
-      "command": "npx",
-      "args": ["-y", "context-mode"]
-    },
     "chrome-devtools": {
       "command": "npx",
       "args": [
@@ -25,9 +21,6 @@
         "--experimental-screencast",
         "--experimental-ffmpeg-path=/usr/bin/ffmpeg"
       ]
-    },
-    "hound": {
-      "command": "/Users/hali/.local/bin/hound"
     }
   }
 }
