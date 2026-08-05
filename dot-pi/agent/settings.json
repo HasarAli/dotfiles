@@ -2,9 +2,7 @@
   "lastChangelogVersion": "0.82.1",
   "theme": "dark",
   "packages": [
-    "npm:pi-mcp-adapter",
     "/home/hasar/.pi/agent/extensions/subagent",
-    "npm:pi-deepseek-search",
     "npm:pi-permission-system"
   ],
   "defaultProvider": "deepseek",
