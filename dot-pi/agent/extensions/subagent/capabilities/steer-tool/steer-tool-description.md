@@ -1,0 +1,1 @@
+Send a steering message to a running background agent. The message is injected into its conversation after the current tool call finishes, letting you redirect its work mid-run. Fails if the agent is not running.

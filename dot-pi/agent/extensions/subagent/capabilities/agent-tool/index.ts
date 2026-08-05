@@ -25,24 +25,19 @@ export function registerAgentTool(pi: ExtensionAPI, deps: SubagentDeps): void {
     name: SUBAGENT_TOOL_NAMES.AGENT,
     label: "Agent",
     description: agentToolDescription,
-    promptSnippet: "Launch autonomous sub-agents for complex multi-step tasks",
-    promptGuidelines: [
-      "Subagents are valuable for parallelizing independent queries or for protecting the main context window from excessive results, but should not be used excessively when not needed. Importantly, avoid duplicating work that subagents are already doing — if you delegate research to a subagent, do not also perform the same searches yourself.",
-      "For broad codebase exploration or research, spawn Agent. Otherwise use direct tools (read, grep, find) when the target is already known.",
-      "When an agent runs in the background, you will be notified on completion — do not poll or sleep waiting for it. Continue with other work instead.",
-      "Trust but verify: an agent's summary describes intent, not outcome. When an agent writes or edits code, check the actual changes before reporting work as done.",
-    ],
+    promptSnippet: "Launch or resume an autonomous agent",
     parameters: Type.Object({
       prompt: Type.String({
-        description: "The task for the agent to perform.",
+        description:
+          "Self-contained task brief. The agent does not see this conversation, so restate the goal, relevant context and findings so far, constraints, and any key files or resources. Avoid one-line command-style prompts.",
       }),
       description: Type.String({
-        description: "A short (3-5 word) description of the task (shown in UI).",
+        description: "3–5 word task label shown in the UI.",
       }),
       model: Type.Optional(
         Type.String({
           description:
-            'Optional model override. Accepts "provider/modelId" or a fuzzy short name. Omit to use the parent model.',
+            'Optional model override. Must be exact "provider/modelId". Omit to use the parent model.',
         }),
       ),
       thinking: Type.Optional(
@@ -52,12 +47,13 @@ export function registerAgentTool(pi: ExtensionAPI, deps: SubagentDeps): void {
       ),
       run_in_background: Type.Optional(
         Type.Boolean({
-          description: "Set to true to run in background. Returns agent ID immediately. You will be notified on completion.",
+          description:
+            "If true, run the agent in the background and return its ID immediately instead of waiting for results (use `get_subagent_result` with the returned ID to retrieve output).",
         }),
       ),
       resume: Type.Optional(
         Type.String({
-          description: "Optional agent ID to resume from. Continues from previous context.",
+          description: "The agent ID of a previously launched background agent to resume.",
         }),
       ),
     }),
