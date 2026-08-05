@@ -1,10 +1,7 @@
 {
   "lastChangelogVersion": "0.82.1",
   "theme": "dark",
-  "packages": [
-    "/home/hasar/.pi/agent/extensions/subagent",
-    "npm:pi-permission-system"
-  ],
+  "packages": ["npm:pi-permission-system"],
   "defaultProvider": "deepseek",
   "defaultModel": "deepseek-v4-pro",
   "defaultThinkingLevel": "medium"
