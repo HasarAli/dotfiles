@@ -7,7 +7,7 @@ export function registerWebFetchTool(pi: ExtensionAPI): void {
     name: "web_fetch",
     label: "Web Fetch",
     description:
-      "Read a web page or PDF and return its text, keyword matches, or a Gemini-extracted answer. " +
+      "Read a web page or PDF and return its text, keyword matches, or a model-extracted answer. " +
       "JS-rendered and bot-protected pages are not fetched — use the browser tool for those.",
     parameters: webFetchParams,
     async execute(_id, params, signal, _onUpdate, ctx) {

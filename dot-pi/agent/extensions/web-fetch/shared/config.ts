@@ -2,40 +2,24 @@
 
 /**
  * Model that reads the page in `distill` mode (both urlContext and local paths);
- * `FETCH_URL_MODEL` overrides. 3.6-flash reads long pages more reliably than the
- * flash-lite it replaced.
+ * `FETCH_URL_MODEL` overrides.
  */
 export const DISTILL_MODEL = process.env.FETCH_URL_MODEL || "gemini-3.6-flash";
 
 /**
- * Primary path for `distill`: Gemini's server-side urlContext fetch. Set
+ * Primary path for `distill`: server-side urlContext fetch. Set
  * WEB_FETCH_SERVER_FETCH=0 to force the local curl pipeline everywhere.
  */
 export const SERVER_FETCH_ENABLED = process.env.WEB_FETCH_SERVER_FETCH !== "0";
-
-/** Ceiling on returned page text when not distilling, in tokens (`max_tokens` overrides). */
-export const DEFAULT_MAX_TOKENS = 1200;
-
-/** Never let a `max_tokens` cap drop below this, so tiny values still return something usable. */
-export const MIN_CONTENT_CHARS = 500;
 
 /** Rough chars-per-token used for token↔char conversions. */
 export const CHARS_PER_TOKEN = 4;
 
 /** Default ceiling on returned page text (chars) in bare mode. */
-export const DEFAULT_MAX_CHARS = DEFAULT_MAX_TOKENS * CHARS_PER_TOKEN;
+export const DEFAULT_MAX_CHARS = 50_000;
 
-/**
- * Cap on the stored substrate — what grep and distill read. Doubles as the
- * distill input ceiling, so a partial page is never read as the whole one.
- */
-export const MAX_STORED_CHARS = 200_000;
-
-/** Gemini generateContent call timeout. */
+/** GenerateContent call timeout. */
 export const GEMINI_TIMEOUT_MS = 60_000;
-
-/** Fallback TTL when WEB_FETCH_CACHE_TTL is unset. */
-export const CACHE_TTL_DEFAULT_SECONDS = 3600;
 
 /** curl exit codes we map onto named fetch failures. */
 export const CURL_EXIT_TOO_BIG = 63;
@@ -65,12 +49,6 @@ export const NEEDS_JS_RAW_BYTES = 20_000;
 export const GREP_MAX_MATCHES = 20;
 export const GREP_CONTEXT_CHARS = 200;
 export const GREP_MAX_RETURN_CHARS = 12_000;
-
-/** Disk cache. */
-export const CACHE_TTL_SECONDS = Number(process.env.WEB_FETCH_CACHE_TTL ?? CACHE_TTL_DEFAULT_SECONDS);
-export const CACHE_DIR =
-  process.env.WEB_FETCH_CACHE_DIR ||
-  `${process.env.XDG_CACHE_HOME || `${process.env.HOME || "/tmp"}/.cache`}/pi-web-fetch`;
 
 /** Extraction child timeouts (defuddle, pdftotext). */
 export const EXTRACT_TIMEOUT_MS = 60_000;
