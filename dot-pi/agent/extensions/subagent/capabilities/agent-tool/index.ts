@@ -26,6 +26,9 @@ export function registerAgentTool(pi: ExtensionAPI, deps: SubagentDeps): void {
     label: "Agent",
     description: agentToolDescription,
     promptSnippet: "Launch or resume an autonomous agent",
+    promptGuidelines: [
+      "Delegate complex, multi-step, or context-heavy tasks to Agent.",
+    ],
     parameters: Type.Object({
       prompt: Type.String({
         description:
