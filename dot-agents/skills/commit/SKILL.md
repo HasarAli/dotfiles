@@ -1,6 +1,6 @@
 ---
 name: commit
-description: Write commit messages and follow commit conventions. Use when the user is about to commit, asks for a commit message, mentions committing, or when another skill reaches the commit step.
+description: Write commit messages following conventions. Use when about to commit, asking for a commit message, or mentioning committing.
 ---
 
 ## Messages
