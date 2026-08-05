@@ -1,0 +1,19 @@
+{
+  "$schema": "~/.pi/agent/pi-permissions.schema.json",
+  "tools": {
+    // Decrypted secrets — SOPS can write clear-text copies (*.dec.yaml, .env, .dotenv)
+    "read:secrets/*.dec*": "deny",
+    "write:secrets/*.dec*": "deny",
+    "edit:secrets/*.dec*": "deny",
+    "read:secrets/*.env": "deny",
+    "write:secrets/*.env": "deny",
+    "edit:secrets/*.env": "deny",
+    "read:secrets/*.dotenv": "deny",
+    "write:secrets/*.dotenv": "deny",
+    "edit:secrets/*.dotenv": "deny",
+    // Pi auth tokens
+    "read:dot-pi/agent/auth.json": "deny",
+    "write:dot-pi/agent/auth.json": "deny",
+    "edit:dot-pi/agent/auth.json": "deny"
+  }
+}
