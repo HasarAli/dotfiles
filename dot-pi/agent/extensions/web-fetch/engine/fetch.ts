@@ -36,16 +36,8 @@ export type FetchFailureReason =
   | "too_many_redirects";
 
 export type FetchOutcome =
-  | { ok: true; revalidated: false; status: number; contentType: string; body: Buffer; finalUrl: string; headers: Record<string, string> }
-  | { ok: true; revalidated: true; status: 304; finalUrl: string }
+  | { ok: true; status: number; contentType: string; body: Buffer; finalUrl: string; headers: Record<string, string> }
   | { ok: false; reason: FetchFailureReason; detail: string; status?: number };
-
-/** Revalidation state from the cache; applied on the hop that reaches finalUrl. */
-export interface Revalidate {
-  etag?: string;
-  lastModified?: string;
-  finalUrl: string;
-}
 
 class FetchFailure extends Error {
   readonly reason: FetchFailureReason;
@@ -170,7 +162,6 @@ interface HopResult {
 async function fetchHop(
   target: Target,
   signal: AbortSignal | undefined,
-  revalidate: Revalidate | undefined,
 ): Promise<HopResult> {
   const bodyPath = join(tmpdir(), `pi-web-fetch-${randomUUID()}.body`);
   const headerPath = join(tmpdir(), `pi-web-fetch-${randomUUID()}.hdr`);
@@ -186,8 +177,6 @@ async function fetchHop(
     "-o", bodyPath,
     "-D", headerPath,
     "-w", "%{http_code}",
-    ...(revalidate?.etag ? ["-H", `If-None-Match: ${revalidate.etag}`] : []),
-    ...(revalidate?.lastModified ? ["-H", `If-Modified-Since: ${revalidate.lastModified}`] : []),
     ...target.ips.flatMap((ip) => ["--resolve", `${target.hostname}:${target.port}:${ip}`]),
     target.href,
   ];
@@ -245,13 +234,10 @@ function failFor(e: unknown): FetchOutcome {
 
 /**
  * Fetch with redirects followed manually, every hop re-resolved and validated.
- * `revalidate` attaches conditional headers only on the hop that reaches the
- * cached resource's final URL.
  */
 export async function fetchPage(
   rawUrl: string,
   signal?: AbortSignal,
-  revalidate?: Revalidate,
 ): Promise<FetchOutcome> {
   let current: string;
   try {
@@ -267,17 +253,15 @@ export async function fetchPage(
     } catch (e) {
       return failFor(e);
     }
-    const hopRevalidate = revalidate && current === revalidate.finalUrl ? revalidate : undefined;
 
     let res: HopResult;
     try {
-      res = await fetchHop(target, signal, hopRevalidate);
+      res = await fetchHop(target, signal);
     } catch (e) {
       return failFor(e);
     }
     const { status, headers, body } = res;
 
-    if (status === 304) return { ok: true, revalidated: true, status, finalUrl: current };
     // A 403 with Cloudflare's challenge headers is a bot-check, not an auth wall —
     // no credentials fix it; only a JS-capable browser passes.
     if (status === 403 && isCloudflareChallenge(headers, body)) {
@@ -304,7 +288,6 @@ export async function fetchPage(
 
     return {
       ok: true,
-      revalidated: false,
       status,
       finalUrl: current,
       contentType: headers["content-type"] || "",

@@ -1,7 +1,7 @@
 {
   "name": "web-fetch",
-  "version": "1.1.0",
-  "description": "web_fetch tool: curl → defuddle/pdftotext → cache → grep | Gemini distill.",
+  "version": "1.2.0",
+  "description": "web_fetch tool: curl → defuddle/pdftotext → grep | distill.",
   "private": true,
   "peerDependencies": {
     "@earendil-works/pi-coding-agent": ">=0.80.0"
