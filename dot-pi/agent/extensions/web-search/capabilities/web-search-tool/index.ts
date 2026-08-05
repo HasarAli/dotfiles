@@ -15,7 +15,6 @@ export function registerWebSearchTool(pi: ExtensionAPI): void {
       "web_search: returns a synthesized answer with cited source URLs — fetch the best ones with web_fetch for content.",
     promptGuidelines: [
       "Use web_search when you need current or source-backed information outside your training data.",
-      "Cite web_search sources with markdown hyperlinks.",
     ],
     parameters: webSearchParams,
     async execute(_id, params, signal, _onUpdate, ctx) {
