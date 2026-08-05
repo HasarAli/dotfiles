@@ -1,0 +1,17 @@
+{
+  "name": "web-search",
+  "version": "2.0.0",
+  "description": "web_search tool backed exclusively by Gemini's Google Search grounding.",
+  "private": true,
+  "peerDependencies": {
+    "@earendil-works/pi-coding-agent": ">=0.80.0"
+  },
+  "dependencies": {
+    "@sinclair/typebox": "^0.34.49"
+  },
+  "pi": {
+    "extensions": [
+      "./index.ts"
+    ]
+  }
+}
