@@ -8,25 +8,25 @@ export const webFetchParams = Type.Object({
     Type.String({
       description:
         "What to extract from the page — a question or instruction for the reading model, " +
-        "or keywords when `query_method` is `bm25`. Omit to get the raw page text.",
+        "or keywords when `query_method` is `grep`. Omit to get the raw page text.",
     }),
   ),
   query_method: Type.Optional(
-    Type.Union([Type.Literal("llm"), Type.Literal("bm25")], {
+    Type.Union([Type.Literal("grep"), Type.Literal("distill")], {
       description:
-        "How to answer `query` (default `llm`): `llm` — a model reads the page and " +
-        "returns the answer; `bm25` — return the page blocks most " +
-        "relevant to `query`, no model call. Ignored when `query` is omitted.",
+        "How to answer `query` (default `distill`): `grep` — local keyword matches " +
+        "with context, no API call; `distill` — a Gemini model reads the page and answers. " +
+        "Ignored when `query` is omitted.",
     }),
   ),
   max_tokens: Type.Optional(
     Type.Number({
-      description: `Ceiling on returned page text when not using the \`llm\` method (default ${DEFAULT_MAX_TOKENS})`,
+      description: `Ceiling on returned page text when not distilling (default ${DEFAULT_MAX_TOKENS} tokens)`,
     }),
   ),
   offset: Type.Optional(
     Type.Number({
-      description: "Resume at this character offset after a truncated read",
+      description: "Resume at this character offset after a truncated read; refetches past the stored cap",
     }),
   ),
   pages: Type.Optional(

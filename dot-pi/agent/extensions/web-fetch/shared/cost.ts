@@ -9,6 +9,6 @@ const round4 = (n: number) => Math.round(n * 1e4) / 1e4;
  * look, a zero does not.
  */
 export function usdOf(ctx: ExtensionContext, inTok: number, outTok: number): number | undefined {
-  const cost = ctx.modelRegistry.getAll().find((m) => m.id === DISTILL_MODEL)?.cost;
+  const cost = ctx.modelRegistry?.getAll?.().find((m) => m.id === DISTILL_MODEL)?.cost;
   return cost ? round4((inTok * cost.input + outTok * cost.output) / 1e6) : undefined;
 }
