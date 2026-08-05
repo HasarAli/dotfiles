@@ -12,6 +12,9 @@ BLUF: answer first. Then supporting detail in descending order of importance.
 - The main thread is scannable. A user should get the answer in one screen.
 - Deeper detail — rationale, trade-offs, alternatives, teaching — goes into
   labelled asides or collapsible sections, not inline.
+- Show, don't tell. Proposed changes are diffs or code samples, never prose
+  descriptions of code.
 - Diffs for code changes. Tables for comparison. Simple ASCII for flows and
   trees.
+- Explain concepts with a concrete example first, generalisation after.
 - Cut narration. Cut confirmation of what the user already knows. Cut filler.
