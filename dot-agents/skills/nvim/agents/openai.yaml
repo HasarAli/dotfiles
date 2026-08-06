@@ -1,0 +1,5 @@
+interface:
+  display_name: "Nvim"
+  short_description: "Answer questions about the Neovim config"
+policy:
+  allow_implicit_invocation: false
