@@ -1,0 +1,79 @@
+[
+  {
+    "id": "format_buffer_keymap",
+    "title": "Keymap question resolves to the plugin file and exact binding",
+    "prompt": "/nvim how do I format the current buffer?",
+    "fake_commands": [],
+    "checks": [
+      {
+        "type": "output_matches",
+        "pattern": "<leader>f",
+        "expect": "names the <leader>f binding"
+      },
+      {
+        "type": "output_matches",
+        "pattern": "conform",
+        "expect": "attributes it to conform"
+      },
+      {
+        "type": "output_matches",
+        "pattern": "conform\\.lua",
+        "expect": "cites the source file"
+      }
+    ]
+  },
+  {
+    "id": "enable_language_module",
+    "title": "Language tooling question finds the opt-in mechanism",
+    "prompt": "/nvim how do I turn on python support in my nvim on this machine?",
+    "fake_commands": [],
+    "checks": [
+      {
+        "type": "output_matches",
+        "pattern": "NVIM_LANGS|nvim-langs",
+        "expect": "explains the $NVIM_LANGS / ~/.config/nvim-langs opt-in"
+      },
+      {
+        "type": "output_matches",
+        "pattern": "python",
+        "expect": "names the python language module"
+      }
+    ]
+  },
+  {
+    "id": "git_ui_keymap",
+    "title": "Plugin question resolves to the right plugin and binding",
+    "prompt": "/nvim what's the keybinding to open the git UI?",
+    "fake_commands": [],
+    "checks": [
+      {
+        "type": "output_matches",
+        "pattern": "<leader>gg",
+        "expect": "names the <leader>gg binding"
+      },
+      {
+        "type": "output_matches",
+        "pattern": "neogit",
+        "expect": "attributes it to neogit"
+      }
+    ]
+  },
+  {
+    "id": "not_in_config_falls_back",
+    "title": "Question the config doesn't cover gets a stock-Neovim answer, honestly labelled",
+    "prompt": "/nvim how do I spell-check my markdown files?",
+    "fake_commands": [],
+    "checks": [
+      {
+        "type": "output_matches",
+        "pattern": "spell",
+        "expect": "gives the stock :set spell answer"
+      },
+      {
+        "type": "output_not_matches",
+        "pattern": "(?:^|\\W)(?:configured|set up) (?:in|via) (?:your|the) config",
+        "expect": "does not claim the config already provides it"
+      }
+    ]
+  }
+]
