@@ -14,6 +14,7 @@ return {
       { '<leader>t', group = '[T]oggle' },
       { '<leader>h', group = 'Git [H]unk', mode = { 'n', 'v' } },
       { '<leader>g', group = '[G]it' },
+      { '<leader>m', group = '[M]arkdown' },
       { '<leader>d', group = '[D]ebug' },
       { '<leader>x', group = 'Diagnostics' },
       { 'gr', group = 'LSP Actions', mode = { 'n' } },
