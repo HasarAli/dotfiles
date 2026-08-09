@@ -38,6 +38,14 @@ API keys live encrypted in `secrets/env.yaml` ([sops](https://github.com/getsops
 SOPS_AGE_KEY_FILE=~/.config/age/keys.txt sops secrets/env.yaml   # edit keys (re-encrypts on save)
 ```
 
+## Neovim
+
+Markdown rendering (`<leader>mp` / `<leader>mt`) uses
+[md-render.nvim](https://github.com/delphinus/md-render.nvim). Mermaid diagram
+and inline image rendering require a terminal with the
+[Kitty graphics protocol](https://sw.kovidgoyal.net/kitty/graphics-protocol/):
+**Kitty**, **WezTerm**, or **Ghostty**.
+
 ## Neovim language modules
 
 Language tooling (LSP servers, formatters, linters, debug adapters) is opt-in
