@@ -28,3 +28,4 @@ dot-pi/agent/models-store.json
 dot-pi/agent/extensions/herdr-agent-state.ts
 dot-pi/context-mode/
 macos/
+dot-config/herdr/release-notes.json
