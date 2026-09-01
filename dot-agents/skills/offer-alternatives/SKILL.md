@@ -3,7 +3,7 @@ name: offer-alternatives
 description: Offer alternative approaches before committing to a design or implementation path. Use when the user asks for alternatives.
 ---
 
-Before committing to an approach, confirm 2-3 perspectives with the user. Pitch each alternative in one line — first principles, YAGNI, prior art, or a cheap disproving spike.
+Before committing to an approach, confirm 2-3 perspectives with the user. Pitch each alternative in one line — first principles, YAGNI, or prior art.
 
 Once the user picks, fan out subagents if the exploration needs parallel work.
 
