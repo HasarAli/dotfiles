@@ -7,6 +7,8 @@ description: Write commit messages following conventions. Use when about to comm
 
 Brief imperative subject; body only when it adds *why*.
 
+Commit bodies and PR/MR descriptions stay brief and high level — what changed and why, not a walkthrough. Let the diff carry the detail; never restate it in prose.
+
 ## Atomic commits
 
 Each commit is one logical change — green at every commit.
