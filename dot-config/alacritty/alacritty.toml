@@ -34,3 +34,10 @@ chars = "\u001B\r"
 key = "Return"
 mods = "Alt"
 chars = "\u001B[13;3u"
+
+# Ctrl+Enter has no legacy encoding. Kitty CSI-u is what Claude Code reads as
+# "send now", and herdr forwards it to panes that negotiated enhanced keys.
+[[keyboard.bindings]]
+key = "Return"
+mods = "Control"
+chars = "\u001B[13;5u"
