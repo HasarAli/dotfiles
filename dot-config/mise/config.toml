@@ -23,7 +23,7 @@ fzf = "latest"
 "github:rtk-ai/rtk" = { version = "latest", exe = "rtk" }
 
 # herdr publishes Linux release assets only; macOS gets it from Homebrew.
-"github:ogulcancelik/herdr" = { version = "latest", os = ["linux"] }
+"github:herdrdev/herdr" = { version = "latest", os = ["linux"] }
 
 [settings]
 experimental = true    # required by the github and npm backends
