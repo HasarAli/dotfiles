@@ -4,7 +4,6 @@
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.29.0",
     "defuddle": "^0.19.2",
-    "pi-mcp-adapter": "^2.15.0",
     "pi-permission-system": "^0.8.0"
   }
 }

@@ -9,7 +9,9 @@ import type { SubagentDeps } from "../../shared/types.js";
 import { showAgentsMenu } from "./menus.js";
 
 export function registerAgentsCommand(pi: ExtensionAPI, deps: SubagentDeps): void {
-  pi.registerCommand("agents", async (ctx) => {
-    await showAgentsMenu(ctx, deps);
+  pi.registerCommand("agents", {
+    handler: async (_args, ctx) => {
+      await showAgentsMenu(ctx, deps);
+    },
   });
 }

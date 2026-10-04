@@ -7,7 +7,6 @@
         "chrome-devtools-mcp@latest",
         "--auto-connect",
         "--no-headless",
-        "--no-isolated",
         "--viewport=1280x720",
         "--screenshot-format=webp",
         "--no-usage-statistics",
