@@ -4,9 +4,10 @@
   "packages": [
     "npm:pi-permission-system"
   ],
-  "defaultProvider": "openai-codex",
+  "defaultProvider": "openai",
   "defaultModel": "gpt-6-luna",
   "defaultThinkingLevel": "medium",
   "hideThinkingBlock": true,
-  "tuiMode": "regular"
+  "tuiMode": "regular",
+  "deviceId": "a271bc64-483e-4051-b91c-a9f34761cf97"
 }
