@@ -65,6 +65,13 @@
     "run": "off",
     "init": "off",
     "review": "off",
-    "security-review": "off"
+    "security-review": "off",
+    "anthropic-skills:docs": "off",
+    "anthropic-skills:morning": "off",
+    "anthropic-skills:import-memory": "off",
+    "anthropic-skills:docx": "off",
+    "anthropic-skills:pptx": "off",
+    "anthropic-skills:xlsx": "off",
+    "anthropic-skills:pdf": "off"
   }
 }
