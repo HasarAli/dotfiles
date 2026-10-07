@@ -95,6 +95,28 @@ type = "plugin_action"
 command = "herdr-splits.resize-right"
 description = "Resize right"
 
+# ── Mark + join pane (tmux style) ──
+# Mark a pane, navigate to any tab or workspace, then join it next to the
+# focused pane: | splits right, _ splits down.
+
+[[keys.command]]
+key = "prefix+m"
+type = "shell"
+command = "$HOME/.config/herdr/scripts/pane-mark.sh mark"
+description = "Pane: toggle mark"
+
+[[keys.command]]
+key = "prefix+|"
+type = "shell"
+command = "$HOME/.config/herdr/scripts/pane-mark.sh join right"
+description = "Pane: join marked pane to the right"
+
+[[keys.command]]
+key = "prefix+_"
+type = "shell"
+command = "$HOME/.config/herdr/scripts/pane-mark.sh join down"
+description = "Pane: join marked pane below"
+
 # ── Plugin: worktrunk ──
 # Overrides herdr's built-in "new worktree" (prefix+shift+g) with
 # worktrunk's switch/create picker with hooks.
