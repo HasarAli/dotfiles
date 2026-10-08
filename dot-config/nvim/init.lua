@@ -134,6 +134,7 @@ require('lazy').setup({
   { import = 'plugins' },
   lang_spec(),
 }, { ---@diagnostic disable-line: missing-fields
+  concurrency = 1,
   -- No plugin here needs luarocks
   rocks = { enabled = false },
   ui = {
