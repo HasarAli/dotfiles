@@ -1,30 +1,4 @@
 {
-  "model": "opus",
-  "outputStyle": "bluf",
-  "hooks": {
-    "SessionStart": [
-      {
-        "matcher": "*",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "[ -x \"$HOME/.claude/hooks/herdr-agent-state.sh\" ] && \"$HOME/.claude/hooks/herdr-agent-state.sh\" session; true",
-            "timeout": 10
-          }
-        ]
-      }
-    ]
-  },
-  "statusLine": {
-    "type": "command",
-    "command": "~/.claude/statusline.sh"
-  },
-  "effortLevel": "low",
-  "theme": "dark",
-  "disableWorkflows": true,
-  "disableRemoteControl": true,
-  "disableClaudeAiConnectors": true,
-  "disableArtifact": true,
   "permissions": {
     "deny": [
       "TaskCreate",
@@ -48,6 +22,8 @@
       "CronList"
     ]
   },
+  "model": "opus",
+  "disableClaudeAiConnectors": true,
   "skillOverrides": {
     "claude-in-chrome": "user-invocable-only",
     "claude-api": "user-invocable-only",
@@ -57,7 +33,6 @@
     "artifact-capabilities": "off",
     "keybindings-help": "off",
     "verify": "off",
-    "code-review": "off",
     "simplify": "off",
     "fewer-permission-prompts": "off",
     "loop": "off",
@@ -72,6 +47,42 @@
     "anthropic-skills:docx": "off",
     "anthropic-skills:pptx": "off",
     "anthropic-skills:xlsx": "off",
-    "anthropic-skills:pdf": "off"
-  }
+    "anthropic-skills:pdf": "off",
+    "anthropic-skills:built-in-browser": "off",
+    "anthropic-skills:chrome-browser": "off",
+    "anthropic-skills:computer-use": "off",
+    "anthropic-skills:google-workspace": "off",
+    "anthropic-skills:deep-research": "off",
+    "cowork-plugin-management:cowork-plugin-customizer": "off",
+    "cowork-plugin-management:create-cowork-plugin": "off"
+  },
+  "hooks": {
+    "SessionStart": [
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "[ -x \"$HOME/.claude/hooks/herdr-agent-state.sh\" ] && \"$HOME/.claude/hooks/herdr-agent-state.sh\" session; true",
+            "timeout": 10
+          }
+        ]
+      }
+    ]
+  },
+  "disableRemoteControl": true,
+  "disableWorkflows": true,
+  "disableArtifact": true,
+  "statusLine": {
+    "type": "command",
+    "command": "~/.claude/statusline.sh"
+  },
+  "enabledPlugins": {
+    "cowork-plugin-management@synced": false,
+    "cc-plugin-telemetry@builtin": false,
+    "cc-plugin-plugin-authoring@builtin": false
+  },
+  "outputStyle": "bluf",
+  "effortLevel": "low",
+  "theme": "dark"
 }
