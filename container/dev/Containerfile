@@ -1,55 +1,47 @@
-FROM node:26-trixie
+FROM debian:trixie-slim
 
 ARG DEV_UID=1000
 ARG DEV_GID=1000
+ARG DOTFILES_REPO=https://github.com/HasarAli/dotfiles.git
 
-ENV TERM=xterm-256color \
+ENV HOME=/home/dev \
+    TERM=xterm-256color \
     COLORTERM=truecolor \
-    DOTFILES_DIR=/home/dev/dotfiles \
-    DOTFILES_REPO=https://github.com/HasarAli/dotfiles.git
-
-RUN printf '%s\n' 'Acquire::Check-Valid-Until "false";' > /etc/apt/apt.conf.d/99no-check-valid-until
+    LANG=C.UTF-8 \
+    PNPM_HOME=/home/dev/.local/share/pnpm \
+    PATH=/home/dev/.local/share/pnpm:/home/dev/.local/bin:/home/dev/.local/share/mise/shims:${PATH} \
+    PUPPETEER_SKIP_DOWNLOAD=true \
+    PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium
 
 RUN set -eux; \
-    groupmod -n dev node; \
-    usermod -l dev -d /home/dev -m node; \
-    if [ "${DEV_GID}" != "1000" ]; then groupmod -g "${DEV_GID}" dev; fi; \
-    if [ "${DEV_UID}" != "1000" ]; then usermod -u "${DEV_UID}" dev; fi
-
-RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
-    --mount=type=cache,target=/var/lib/apt/lists,sharing=locked \
-    set -eux; \
     apt-get update -qq; \
     DEBIAN_FRONTEND=noninteractive apt-get install -qq -y --no-install-recommends \
-        bash-completion \
-        fd-find \
-        neovim \
-        ripgrep \
-        stow \
-        tree-sitter-cli \
-        unzip; \
-    ln -sf /usr/bin/fdfind /usr/local/bin/fd
+        ca-certificates curl git gosu sudo openssh-client \
+        build-essential unzip xz-utils less procps poppler-utils chromium; \
+    groupadd --gid "${DEV_GID}" dev; \
+    useradd --uid "${DEV_UID}" --gid dev --create-home --shell /bin/bash dev; \
+    rm -f /home/dev/.bashrc /home/dev/.profile /home/dev/.bash_logout; \
+    git clone --depth 1 "${DOTFILES_REPO}" /home/dev/dotfiles; \
+    chown -R dev:dev /home/dev; \
+    printf 'dev ALL=(root) NOPASSWD: /usr/bin/apt-get\n' > /etc/sudoers.d/dev-bootstrap; \
+    chmod 440 /etc/sudoers.d/dev-bootstrap; \
+    gosu dev env MISE_TRUSTED_CONFIG_PATHS=/home/dev/dotfiles \
+        bash /home/dev/dotfiles/install_deps.sh; \
+    gosu dev mise exec -- npm install -g pnpm; \
+    gosu dev mise exec -- pnpm config set global-bin-dir "${PNPM_HOME}"; \
+    gosu dev mise exec -- pnpm config set store-dir "${PNPM_HOME}/store"; \
+    mkdir -p /home/dev/app/node_modules "${PNPM_HOME}/store"; \
+    chown -R dev:dev /home/dev; \
+    rm /etc/sudoers.d/dev-bootstrap; \
+    SUDO_FORCE_REMOVE=yes apt-get purge -y sudo; \
+    rm -rf /var/lib/apt/lists/*
 
-RUN npm install -g pnpm && \
-    printf '#!/bin/sh\necho "error: use pnpm instead of npm" >&2\nexit 1\n' \
-        > /usr/local/bin/npm && \
-    printf '#!/bin/sh\necho "error: use pnpm dlx instead of npx" >&2\nexit 1\n' \
-        > /usr/local/bin/npx && \
-    chmod +x /usr/local/bin/npm /usr/local/bin/npx
-
-RUN pnpm add -g --ignore-scripts @earendil-works/pi-coding-agent
-
-COPY --chown=dev:dev --chmod=755 docker/dev/entrypoint.sh /usr/local/bin/devcontainer-entrypoint
+COPY --chmod=755 entrypoint.sh /usr/local/bin/devcontainer-entrypoint
 
 WORKDIR /home/dev/app
-RUN mkdir -p /home/dev/app/node_modules && chown -R dev:dev /home/dev/app
-
-USER dev
-
 EXPOSE 3000
 
-COPY --chown=dev:dev . .
-
+# Only mounted data is repaired as root; the entrypoint immediately drops to dev.
 USER root
-
 ENTRYPOINT ["devcontainer-entrypoint"]
+CMD ["bash"]

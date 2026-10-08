@@ -1,0 +1,3 @@
+# Docker-compatible builders do not read .containerignore.
+**
+!entrypoint.sh

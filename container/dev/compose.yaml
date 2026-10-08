@@ -1,26 +1,32 @@
 services:
   dev:
     build:
-      context: ../..
-      dockerfile: container/dev/Containerfile
+      context: .
+      dockerfile: Containerfile
       args:
         DEV_UID: ${DEV_UID:-1000}
         DEV_GID: ${DEV_GID:-1000}
-    image: devcontainer:latest
-    container_name: devcontainer
+        DOTFILES_REPO: ${DOTFILES_REPO:-https://github.com/HasarAli/dotfiles.git}
+    image: ${DEV_IMAGE:-project-dev:latest}
     hostname: devcontainer
     stdin_open: true
     tty: true
 
+    # Rootless Podman maps dev to the host user for the source and SSH binds.
+    userns_mode: keep-id
+    user: "0:0"
+
     env_file:
-      - .env
+      - path: .env
+        required: false
 
     environment:
       WATCHPACK_POLLING: "true"
       CHOKIDAR_USEPOLLING: "true"
-      CHOKIDAR_INTERVAL: 100
+      CHOKIDAR_INTERVAL: "100"
 
     volumes:
+      - ${PROJECT_DIR:-../..}:/home/dev/app
       - ${SSH_DIR:-~/.ssh}:/home/dev/.ssh:ro
       - dotfiles:/home/dev/dotfiles
       - node_modules:/home/dev/app/node_modules
@@ -28,7 +34,7 @@ services:
 
     working_dir: /home/dev/app
     ports:
-      - "3000:3000"
+      - "127.0.0.1:${DEV_PORT:-3000}:3000"
 
 volumes:
   dotfiles:
