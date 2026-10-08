@@ -1,5 +1,5 @@
 {
-  "lastChangelogVersion": "1.0.1",
+  "lastChangelogVersion": "1.0.3",
   "theme": "dark",
   "packages": [
     "npm:pi-permission-system"
@@ -9,5 +9,11 @@
   "defaultThinkingLevel": "medium",
   "hideThinkingBlock": true,
   "tuiMode": "regular",
-  "deviceId": "a271bc64-483e-4051-b91c-a9f34761cf97"
+  "deviceId": "a271bc64-483e-4051-b91c-a9f34761cf97",
+  "enabledModels": [
+    "deepseek/deepseek-flash",
+    "openai/gpt-6-astra",
+    "openai/gpt-6-luna",
+    "openai/gpt-6.1-sol"
+  ]
 }
