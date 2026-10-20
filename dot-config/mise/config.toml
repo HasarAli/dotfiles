@@ -15,7 +15,6 @@ python = "latest"
 sops = "latest"
 "npm:@earendil-works/pi-coding-agent" = "latest"
 claude = "latest"
-"npm:@mermaid-js/mermaid-cli" = "latest"
 
 # herdr plugin dependencies: the worktrunk plugin shells out to `wt` and `fzf`,
 # `jq` and `git` come from the system packages.

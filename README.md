@@ -41,10 +41,12 @@ SOPS_AGE_KEY_FILE=~/.config/age/keys.txt sops secrets/env.yaml   # edit keys (re
 ## Neovim
 
 Markdown rendering (`<leader>mp` / `<leader>mt`) uses
-[md-render.nvim](https://github.com/delphinus/md-render.nvim). Mermaid diagram
-and inline image rendering require a terminal with the
+[md-render.nvim](https://github.com/delphinus/md-render.nvim). Inline image
+rendering requires a terminal with the
 [Kitty graphics protocol](https://sw.kovidgoyal.net/kitty/graphics-protocol/):
-**Kitty**, **WezTerm**, or **Ghostty**.
+**Kitty**, **WezTerm**, or **Ghostty**. mermaid-cli is not installed, so Mermaid
+diagrams are not drawn as images; md-render.nvim's docs say it then falls back
+to `npx -y @mermaid-js/mermaid-cli`.
 
 ## Neovim language modules
 
