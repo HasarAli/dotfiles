@@ -98,8 +98,9 @@ if command -v sops &>/dev/null && [ -f "$DOTFILES/secrets/env.yaml" ]; then
     eval "$(sops -d --output-type dotenv "$DOTFILES/secrets/env.yaml" 2>/dev/null | sed 's/^/export /')"
 fi
 
-# Herdr multiplexer
+# Herdr multiplexer; HERDR_AUTOSTART=0 opts a machine or container out.
 if command -v herdr &>/dev/null &&
+	[ "${HERDR_AUTOSTART:-1}" != 0 ] &&
 	[ -z "$HERDR_ENV" ] &&
 	[ "$TERM_PROGRAM" != "vscode" ]; then
     herdr
