@@ -98,11 +98,6 @@ if command -v sops &>/dev/null && [ -f "$DOTFILES/secrets/env.yaml" ]; then
     eval "$(sops -d --output-type dotenv "$DOTFILES/secrets/env.yaml" 2>/dev/null | sed 's/^/export /')"
 fi
 
-# Hound BYOK — reuse existing keys to escalate past its keyless search when needed
-[ -n "${SERPER_API_KEY:-}" ]    && export HOUND_SEARCH_SERPER_KEYS="$SERPER_API_KEY"
-[ -n "${EXA_API_KEY:-}" ]       && export HOUND_SEARCH_EXA_KEYS="$EXA_API_KEY"
-[ -n "${FIRECRAWL_API_KEY:-}" ] && export HOUND_SEARCH_FIRECRAWL_KEYS="$FIRECRAWL_API_KEY"
-
 # Herdr multiplexer
 if command -v herdr &>/dev/null &&
 	[ -z "$HERDR_ENV" ] &&

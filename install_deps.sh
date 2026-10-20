@@ -160,34 +160,8 @@ install_runtimes() {
     "$MISE_BIN" install
 
     # This script is not the interactive shell, so pick up the shims by hand for
-    # the hound, npm, and herdr steps below.
+    # the npm and herdr steps below.
     export PATH="$("$MISE_BIN" bin-paths | tr '\n' ':')$PATH"
-}
-
-# Hound MCP — keyless web search + stealth fetch/crawl/PDF (the web-search
-# engine). Stays outside mise for the [all] extra and the browser download.
-install_hound() {
-    # mise's python carries no pipx, so prefer one already on PATH and only fall
-    # back to bootstrapping it into the interpreter's user site.
-    local pipx
-    pipx=$(command -v pipx || true)
-
-    if [[ -z "$pipx" ]]; then
-        printf 'Installing pipx...\n'
-        python3 -m pip install --user -q --upgrade pipx
-        pipx="$(python3 -m site --user-base)/bin/pipx"
-    fi
-
-    if ! command -v hound >/dev/null 2>&1; then
-        printf 'Installing hound-mcp...\n'
-        "$pipx" install 'hound-mcp[all]'
-    fi
-
-    # Stealth browser Hound escalates to when a page blocks plain HTTP (idempotent)
-    local hvenv
-    hvenv="$("$pipx" environment --value PIPX_LOCAL_VENVS 2>/dev/null || true)/hound-mcp/bin"
-    "$hvenv/patchright" install chromium 2>/dev/null \
-        || "$hvenv/playwright" install chromium 2>/dev/null || true
 }
 
 install_agent_deps() {
@@ -246,7 +220,6 @@ main() {
     fi
 
     install_runtimes
-    install_hound
     install_agent_deps
 
     printf '\nAll dependencies installed.\n'

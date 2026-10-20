@@ -71,7 +71,7 @@ PROJECT/
    herdr --version
    pnpm --version
    pnpm config get global-bin-dir
-   command -v hound pdftotext
+   command -v pdftotext
    touch node_modules/.permissions-check && rm node_modules/.permissions-check
    ```
 
@@ -85,7 +85,7 @@ The build context is only `container/dev`. The image copies only
 `entrypoint.sh`, clones `DOTFILES_REPO`, and runs that repository's full
 `install_deps.sh` as dev. System-package escalation exists only during the
 build; runtime dev has no sudo. Mise supplies the dotfiles tool manifest,
-including pi and herdr; the bootstrap also installs Hound and extension/plugin
+including pi and herdr; the bootstrap also installs extension/plugin
 dependencies. Chromium and PDF utilities support browser/web-fetch tooling.
 The build downloads external packages and can take a while.
 
