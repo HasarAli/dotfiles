@@ -83,7 +83,7 @@ PROJECT/
 
 The build context is only `container/dev`. The image copies only
 `entrypoint.sh`, clones `DOTFILES_REPO`, and runs that repository's full
-`install_deps.sh` as dev. System-package escalation exists only during the
+`install.sh` as dev. System-package escalation exists only during the
 build; runtime dev has no sudo. Mise supplies the dotfiles tool manifest,
 including pi and herdr; the bootstrap also installs extension/plugin
 dependencies. Chromium and PDF utilities support browser/web-fetch tooling.

@@ -8,7 +8,7 @@ Requires **Debian, Ubuntu, or macOS**.
 
 ```sh
 git clone <repo-url> dotfiles
-dotfiles/install_deps.sh
+dotfiles/install.sh
 ```
 
 Run it as yourself, not under `sudo` — it escalates per command for system
@@ -77,7 +77,7 @@ the base lsp/lint/dap specs via lazy.nvim opts fragments.
 Herdr is the multiplexer. Configuration lives in
 `dot-config/herdr/config.toml`; plugins are declared in
 `dot-config/herdr/plugins.list` — one `OWNER/REPO` per line — and installed by
-`install_deps.sh`. Plugins shell out to `wt`, `fzf`, `jq`, and `git`, all
+`install.sh`. Plugins shell out to `wt`, `fzf`, `jq`, and `git`, all
 installed for you.
 
 herdr's own `plugins.json` is machine-specific and stays untracked.

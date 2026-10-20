@@ -26,7 +26,7 @@ RUN set -eux; \
     printf 'dev ALL=(root) NOPASSWD: /usr/bin/apt-get\n' > /etc/sudoers.d/dev-bootstrap; \
     chmod 440 /etc/sudoers.d/dev-bootstrap; \
     gosu dev env MISE_TRUSTED_CONFIG_PATHS=/home/dev/dotfiles \
-        bash /home/dev/dotfiles/install_deps.sh; \
+        bash /home/dev/dotfiles/install.sh; \
     gosu dev mise exec -- npm install -g pnpm; \
     gosu dev mise exec -- pnpm config set global-bin-dir "${PNPM_HOME}"; \
     gosu dev mise exec -- pnpm config set store-dir "${PNPM_HOME}/store"; \
