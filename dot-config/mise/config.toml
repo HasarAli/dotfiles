@@ -20,7 +20,7 @@ claude = "latest"
 # herdr plugin dependencies: the worktrunk plugin shells out to `wt` and `fzf`,
 # `jq` and `git` come from the system packages.
 fzf = "latest"
-"github:max-sixty/worktrunk" = { version = "latest", exe = "wt" }
+"github:max-sixty/worktrunk" = "latest"
 
 # herdr publishes Linux release assets only; macOS gets it from Homebrew.
 "github:herdrdev/herdr" = { version = "latest", os = ["linux"] }
