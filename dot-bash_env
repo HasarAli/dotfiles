@@ -39,9 +39,21 @@ fi
 [ -d "$HOME/bin" ] && PATH="$HOME/bin:$PATH"
 [ -d "$HOME/.local/bin" ] && PATH="$HOME/.local/bin:$PATH"
 
+# A Node already on PATH (Homebrew, apt, a dev container's own) wins: mise then
+# leaves Node alone instead of installing and shimming a second one. Paths under
+# mise's own folders don't count. Reading .node-version is then off too, since
+# it only serves mise's Node and otherwise warns about every project with one.
+if type -ap node 2>/dev/null | grep -qv '/mise/'; then
+    case ",${MISE_DISABLE_TOOLS:-}," in
+        *,node,*) ;;
+        *) export MISE_DISABLE_TOOLS="${MISE_DISABLE_TOOLS:+$MISE_DISABLE_TOOLS,}node" ;;
+    esac
+    export MISE_IDIOMATIC_VERSION_FILE_ENABLE_TOOLS=
+fi
+
 # mise shims. `mise activate` in .bashrc covers interactive shells; the shims
 # cover everything else — hooks, statuslines, and editor subprocesses that never
-# source a shell rc yet still need node, python, nvim, pi.
+# source a shell rc yet still need node, nvim, pi.
 [ -d "${MISE_DATA_DIR:-$HOME/.local/share/mise}/shims" ] &&
     PATH="${MISE_DATA_DIR:-$HOME/.local/share/mise}/shims:$PATH"
 export PATH

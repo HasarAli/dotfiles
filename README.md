@@ -22,10 +22,15 @@ The one step it cannot do for you is the age identity — see Secrets below.
 ## Runtimes
 
 Apt and Homebrew supply only system packages. Everything versioned — neovim,
-node, python, sops, pi, herdr — comes from [mise](https://mise.jdx.dev),
+node, sops, pi, claude, herdr — comes from [mise](https://mise.jdx.dev),
 declared in `dot-config/mise/config.toml`. One manifest, both platforms, no root.
+Python is the system's `python3`; mise installs none.
 
 Versions float on `latest`; pin one by naming its version there.
+
+A Node already on PATH, such as Homebrew's or a dev container's own, replaces
+mise's: `.bash_env` and `install.sh` then set `MISE_DISABLE_TOOLS=node` and turn
+off mise's `.node-version` reading, which only serves mise's Node.
 
 A project overrides these with its own `mise.toml`, and the PATH swaps on `cd`.
 Run `mise trust` in the repo first — a `mise.toml` can run commands.
@@ -67,7 +72,8 @@ echo 'python,lua,bash,data' > ~/.config/nvim-langs
 | `bash`       | bash-language-server                                     |
 | `data`       | jsonls, yamlls, marksman, prettier                       |
 
-Node and python come from mise, so every module works on a stock install. Mason
+Node comes from mise or the system, so the Node-based modules work on a stock
+install; the `python` module needs the system's `python3`. Mason
 installs the tools on the
 next nvim launch; disabling a module stops loading its servers but doesn't
 delete installed binaries (`:MasonUninstall <pkg>` if you want them gone).

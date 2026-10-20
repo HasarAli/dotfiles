@@ -7,11 +7,11 @@
 
 [tools]
 neovim = "latest"
+# Skipped where another Node is already on PATH (.bash_env, install.sh).
 node = "latest"
 fd = "latest"
 ripgrep = "latest"
 tree-sitter = "latest"
-python = "latest"
 sops = "latest"
 "npm:@earendil-works/pi-coding-agent" = "latest"
 claude = "latest"

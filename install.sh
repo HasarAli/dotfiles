@@ -191,6 +191,17 @@ install_runtimes() {
         MISE_BIN="$HOME/.local/bin/mise"
     fi
 
+    # Same rule as .bash_env, which a fresh machine has not loaded yet: a Node
+    # already on PATH means mise installs none.
+    if type -ap node 2>/dev/null | grep -qv '/mise/'; then
+        printf 'Using the Node already on PATH; mise skips Node.\n'
+        case ",${MISE_DISABLE_TOOLS:-}," in
+            *,node,*) ;;
+            *) export MISE_DISABLE_TOOLS="${MISE_DISABLE_TOOLS:+$MISE_DISABLE_TOOLS,}node" ;;
+        esac
+        export MISE_IDIOMATIC_VERSION_FILE_ENABLE_TOOLS=
+    fi
+
     printf 'Installing runtimes and tools via mise...\n'
     "$MISE_BIN" install
 
