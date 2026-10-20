@@ -5,6 +5,7 @@
  */
 import { spawn } from "node:child_process";
 import { existsSync } from "node:fs";
+import { homedir } from "node:os";
 import { dirname, join } from "node:path";
 import { EXTRACT_TIMEOUT_MS, MAX_MODULE_LOOKUP_DEPTH } from "../shared/config.js";
 
@@ -43,6 +44,9 @@ function isPdf(raw: Buffer): boolean {
 function defuddleCliPath(): string {
   const fromEnv = process.env.DEFUDDLE_CLI;
   if (fromEnv && existsSync(fromEnv)) return fromEnv;
+  // Where install.sh puts it, through the stowed ~/.pi; works from any project.
+  const installed = join(homedir(), ".pi", "agent", "npm", "node_modules", "defuddle", "dist", "cli.js");
+  if (existsSync(installed)) return installed;
   for (const rel of [
     join("dot-pi", "agent", "npm", "node_modules", "defuddle", "dist", "cli.js"),
     join("node_modules", "defuddle", "dist", "cli.js"),
