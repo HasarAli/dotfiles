@@ -3,6 +3,10 @@ case $- in
     *) return ;;
 esac
 
+# A non-login shell never reads .bash_profile, so load the shared environment
+# here too; a login shell already has it, and the file skips itself.
+[ -f "$HOME/.bash_env" ] && . "$HOME/.bash_env"
+
 # Claude Code: default to fullscreen rendering (= `tui: fullscreen`)
 export CLAUDE_CODE_NO_FLICKER=1
 

@@ -1,0 +1,47 @@
+# Environment for every shell: login shells load it from .bash_profile, and
+# interactive non-login shells, such as a Linux terminal tab or `podman exec
+# ... bash`, from .bashrc. The guard keeps a shell that gets both, or that
+# inherits it from its parent, from prepending PATH twice.
+[ -n "${DOTFILES_ENV_LOADED:-}" ] && return
+export DOTFILES_ENV_LOADED=1
+
+export XDG_CONFIG_HOME="$HOME/.config"
+
+# Alacritty exports no locale on macOS, so panes inherit setlocale at C: agent
+# TUIs mangle wide glyphs and perl/python warn on every call. Take the first
+# UTF-8 locale the machine actually has — naming differs across macOS and Debian.
+if [ -z "${LANG:-}" ]; then
+    for _locale in en_CA.UTF-8 en_US.UTF-8 C.UTF-8; do
+        if locale -a 2>/dev/null | grep -qix -e "$_locale" -e "${_locale/.UTF-8/.utf8}"; then
+            export LANG="$_locale"
+            break
+        fi
+    done
+    unset _locale
+fi
+
+# Default editor/pager for git, fzf, less, etc.
+export EDITOR="nvim"
+export VISUAL="nvim"
+export PAGER="less"
+export LESS="-R"   # keep ANSI colors in pager output (git, bat, etc.)
+
+# mise installs Claude Code and owns its version (`mise upgrade`), so Claude
+# Code's own updater stays off.
+export DISABLE_AUTOUPDATER=1
+
+# Auto-detect Homebrew on macOS
+if [[ "$OSTYPE" == "darwin"* ]]; then
+    eval "$(/opt/homebrew/bin/brew shellenv)"
+fi
+
+# Prepend user bins to take priority over system binaries
+[ -d "$HOME/bin" ] && PATH="$HOME/bin:$PATH"
+[ -d "$HOME/.local/bin" ] && PATH="$HOME/.local/bin:$PATH"
+
+# mise shims. `mise activate` in .bashrc covers interactive shells; the shims
+# cover everything else — hooks, statuslines, and editor subprocesses that never
+# source a shell rc yet still need node, python, nvim, pi.
+[ -d "${MISE_DATA_DIR:-$HOME/.local/share/mise}/shims" ] &&
+    PATH="${MISE_DATA_DIR:-$HOME/.local/share/mise}/shims:$PATH"
+export PATH
