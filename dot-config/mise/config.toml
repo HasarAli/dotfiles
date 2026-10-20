@@ -14,6 +14,7 @@ tree-sitter = "latest"
 python = "latest"
 sops = "latest"
 "npm:@earendil-works/pi-coding-agent" = "latest"
+claude = "latest"
 "npm:@mermaid-js/mermaid-cli" = "latest"
 
 # herdr plugin dependencies: the worktrunk plugin shells out to `wt` and `fzf`,
@@ -26,3 +27,6 @@ fzf = "latest"
 
 [settings]
 experimental = true    # required by the github and npm backends
+# A project's .node-version picks its Node, so `node` inside it matches what
+# the project pins rather than "latest".
+idiomatic_version_file_enable_tools = ["node"]
