@@ -103,13 +103,17 @@ install_macos() {
     printf 'Installing system packages via Homebrew...\n'
     # bash-completion@2 is the Bash 4+ series; the unversioned formula targets
     # Bash 3.2 and conflicts with it. .bashrc sources the @2 profile.d script.
-    brew install age bash-completion@2 git herdr jq stow
+    brew install age bash-completion@2 git herdr jq poppler stow
 }
 
+# build-essential compiles Neovim's tree-sitter parsers and telescope-fzf-native,
+# unzip unpacks Mason's downloads, poppler-utils gives pi's web-fetch pdftotext,
+# and less is the PAGER.
 install_debian() {
     printf 'Installing system packages via apt...\n'
     $SUDO apt-get update -qq
-    $SUDO apt-get install -qq -y age bash-completion curl git jq stow
+    $SUDO env DEBIAN_FRONTEND=noninteractive apt-get install -qq -y \
+        age bash-completion build-essential curl git jq less poppler-utils stow unzip
 }
 
 # launchd owns the herdr server so it lives in the Aqua login session and keeps
@@ -117,7 +121,14 @@ install_debian() {
 # stowing, which links the plist into ~/.config/herdr.
 install_herdr_agent() {
     local target=$HOME/Library/LaunchAgents/local.herdr-server.plist
+    local template=$DOTFILES_DIR/macos/herdr-server.plist.in
     local herdr shell_bin path
+
+    # macos/ is gitignored, so a fresh clone has no template.
+    if [[ ! -f "$template" ]]; then
+        printf 'Skipping the herdr LaunchAgent: %s is missing.\n' "$template" >&2
+        return 0
+    fi
 
     herdr=$(command -v herdr) || {
         printf 'Skipping the herdr LaunchAgent: herdr is not on PATH.\n' >&2
@@ -132,13 +143,37 @@ install_herdr_agent() {
         -e "s|@HERDR@|$herdr|g" \
         -e "s|@SHELL@|$shell_bin|g" \
         -e "s|@PATH@|$path|g" \
-        "$DOTFILES_DIR/macos/herdr-server.plist.in" >"$target"
+        "$template" >"$target"
 
     launchctl bootout "gui/$UID/local.herdr-server" 2>/dev/null || true
     launchctl bootstrap "gui/$UID" "$target"
 }
 
+# Stow refuses to replace a plain file, such as the .bashrc a new account gets
+# from /etc/skel, so each one it would conflict with moves aside first. Stow 2.3
+# and 2.4 word the conflict differently.
+move_conflicts_aside() {
+    local target backup
+
+    while read -r target; do
+        [[ -z "$target" ]] && continue
+        backup="$HOME/$target.pre-dotfiles"
+        [[ -e "$backup" ]] && backup="$backup.$(date +%s)"
+        printf 'Moving ~/%s aside to %s\n' "$target" "$backup"
+        mv "$HOME/$target" "$backup"
+    done < <(stow -n -R --dotfiles -t "$HOME" -d "$DOTFILES_DIR" . 2>&1 |
+        sed -n \
+            -e 's/.*over existing target \(.*\) since neither a link nor a directory.*/\1/p' \
+            -e 's/.*existing target is neither a link nor a directory: \(.*\)$/\1/p')
+}
+
 link_dotfiles() {
+    # A real ~/.claude makes stow link its contents one by one; otherwise stow
+    # links the whole folder and Claude Code writes its credentials and history
+    # into this repo.
+    mkdir -p "$HOME/.claude"
+    move_conflicts_aside
+
     printf 'Stowing dotfiles into %s...\n' "$HOME"
     stow -R --dotfiles -t "$HOME" -d "$DOTFILES_DIR" .
 }
