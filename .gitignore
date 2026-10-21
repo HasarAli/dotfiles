@@ -23,7 +23,6 @@ dot-config/herdr/plugins/
 secrets/*.dec*
 secrets/*.env
 secrets/*.dotenv
-secrets/env.yaml
 dot-pi/agent/auth.json
 
 # pi runtime state: trusted projects and local model stores
