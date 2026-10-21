@@ -241,6 +241,32 @@ install_herdr_plugins() {
     done <"$list"
 }
 
+# ssh reads keys only from files, so the shared GitHub key is decrypted to disk
+# once, unlike the API keys, which .bashrc decrypts into each shell.
+install_ssh_key() {
+    local key=$HOME/.ssh/id_ed25519
+    local age_key=$HOME/.config/age/keys.txt
+
+    if [[ -e "$key" ]]; then
+        printf 'Keeping the existing SSH key at %s.\n' "$key"
+        return 0
+    fi
+
+    if [[ ! -f "$age_key" ]]; then
+        printf 'Skipping the SSH key: %s is missing.\n' "$age_key" >&2
+        return 0
+    fi
+
+    printf 'Decrypting the SSH key to %s...\n' "$key"
+    mkdir -p -m 700 "$HOME/.ssh"
+    (
+        umask 077
+        SOPS_AGE_KEY_FILE=$age_key sops decrypt --input-type json --output-type binary \
+            "${DOTFILES_DIR}/secrets/id_ed25519.json" >"$key"
+    )
+    ssh-keygen -y -f "$key" >"$key.pub"
+}
+
 main() {
     if [[ $# -gt 0 ]]; then
         printf 'Error: Unknown argument: %s\n' "$1" >&2
@@ -267,9 +293,10 @@ main() {
 
     install_runtimes
     install_agent_deps
+    install_ssh_key
 
     printf '\nAll dependencies installed.\n'
-    printf 'Remaining manual step: copy the age identity to ~/.config/age/keys.txt\n'
+    printf 'If ~/.config/age/keys.txt was missing, copy it over and rerun this script.\n'
 }
 
 main "$@"
