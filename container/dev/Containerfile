@@ -18,6 +18,9 @@ RUN set -eux; \
     DEBIAN_FRONTEND=noninteractive apt-get install -qq -y --no-install-recommends \
         ca-certificates curl git gosu sudo openssh-client \
         build-essential unzip xz-utils less procps poppler-utils chromium; \
+    # ENV LANG is lost on export to a WSL distro, and without this file WSL
+    # falls back to en_US.UTF-8, which the image doesn't have.
+    printf 'LANG=C.UTF-8\n' > /etc/default/locale; \
     groupadd --gid "${DEV_GID}" dev; \
     useradd --uid "${DEV_UID}" --gid dev --create-home --shell /bin/bash dev; \
     rm -f /home/dev/.bashrc /home/dev/.profile /home/dev/.bash_logout; \
