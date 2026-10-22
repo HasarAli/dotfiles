@@ -20,7 +20,8 @@
       "CronCreate",
       "CronDelete",
       "CronList"
-    ]
+    ],
+    "defaultMode": "auto"
   },
   "model": "opus",
   "disableClaudeAiConnectors": true,
@@ -70,9 +71,9 @@
       }
     ]
   },
-  "disableRemoteControl": true,
   "disableWorkflows": true,
   "disableArtifact": true,
+  "workflowKeywordTriggerEnabled": false,
   "statusLine": {
     "type": "command",
     "command": "~/.claude/statusline.sh"
@@ -83,6 +84,13 @@
     "cc-plugin-plugin-authoring@builtin": false
   },
   "outputStyle": "bluf",
+  "feedbackDrafts": "notify",
   "effortLevel": "low",
-  "theme": "dark"
+  "askUserQuestionTimeout": "never",
+  "autoMemoryEnabled": false,
+  "theme": "dark",
+  "switchModelsOnFlag": false,
+  "inputNeededNotifEnabled": true,
+  "agentPushNotifEnabled": true,
+  "remoteControlAtStartup": true
 }

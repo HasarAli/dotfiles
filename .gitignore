@@ -42,3 +42,6 @@ dot-config/herdr/release-notes.json
 
 # skill-installer lock, written to ~/.agents by a tool outside this repo
 dot-agents/.skill-lock.json
+
+# skills Claude Code downloads from the claude.ai account into ~/.claude/skills
+dot-agents/skills/synced/
