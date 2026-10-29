@@ -27,7 +27,7 @@ dot-pi/agent/auth.json
 dot-config/age/
 
 # worktrunk's per-machine command approvals
-dot-config/worktrunk/
+dot-config/worktrunk/approvals.toml*
 
 # pi runtime state: trusted projects and local model stores
 # (models-store.json is already ignored above)

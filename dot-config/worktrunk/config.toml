@@ -1,0 +1,32 @@
+# Worktrunk's user config, for every repository.
+
+[post-start]
+# Lists a new worktree in Herdr's sidebar, under its repository, the way the
+# herdr-worktrunk plugin's picker does, so a worktree made with a plain
+# `wt switch --create` shows up too. Outside Herdr there's no session to add it to.
+herdr = """
+[ "${HERDR_ENV:-}" = 1 ] || exit 0
+herdr worktree open --cwd {{ primary_worktree_path }} --path {{ worktree_path }} \
+  --label {{ branch }} --no-focus
+"""
+
+[post-remove]
+# Closes the worktree's Herdr workspace, found by its path, which Herdr keeps
+# after the worktree is gone. Closing kills what runs in it, so it waits until no
+# agent in it is working or waiting on you, such as one that ran `wt land` and
+# has yet to report, and until you aren't looking at it, so a report isn't
+# closed before you read it.
+herdr = """
+[ "${HERDR_ENV:-}" = 1 ] || exit 0
+id=$(herdr workspace list | jq -r --arg p {{ worktree_path }} \
+  'first(.result.workspaces[] | select(.worktree.checkout_path == $p) | .workspace_id) // empty')
+[ -n "$id" ] || exit 0
+busy() {
+  herdr agent list | jq -e --arg id "$id" \
+    'any(.result.agents[]; .workspace_id == $id and (.agent_status == "working" or .agent_status == "blocked"))' >/dev/null \
+  || herdr workspace list | jq -e --arg id "$id" \
+    'any(.result.workspaces[]; .workspace_id == $id and .focused)' >/dev/null
+}
+while busy; do sleep 2; done
+herdr workspace close "$id"
+"""
