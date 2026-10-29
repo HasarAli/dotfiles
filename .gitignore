@@ -39,6 +39,7 @@ dot-pi/agent/models-store.json
 dot-pi/agent/extensions/herdr-agent-state.ts
 macos/
 dot-config/herdr/release-notes.json
+dot-config/configstore/
 
 # skill-installer lock, written to ~/.agents by a tool outside this repo
 dot-agents/.skill-lock.json
