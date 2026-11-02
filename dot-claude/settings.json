@@ -85,16 +85,17 @@
   },
   "outputStyle": "bluf",
   "feedbackDrafts": "notify",
-  "effortLevel": "low",
+  "effortLevel": "medium",
+  "autoCompactWindow": 200000,
+  "modelSettings": {
+    "claude-fable-5-1": {
+      "effortLevel": "xhigh"
+    }
+  },
   "askUserQuestionTimeout": "never",
   "autoMemoryEnabled": false,
   "theme": "dark",
   "switchModelsOnFlag": false,
   "inputNeededNotifEnabled": true,
-  "agentPushNotifEnabled": true,
-  "modelSettings": {
-    "claude-opus-5-5": {
-      "effortLevel": "medium"
-    }
-  }
+  "agentPushNotifEnabled": true
 }
