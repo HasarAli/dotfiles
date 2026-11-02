@@ -88,9 +88,13 @@
   "effortLevel": "medium",
   "autoCompactWindow": 200000,
   "askUserQuestionTimeout": "never",
+  "autoUpdatesChannel": "stable",
   "autoMemoryEnabled": false,
   "theme": "dark",
+  "editorMode": "vim",
+  "verbose": false,
   "switchModelsOnFlag": false,
+  "autoContinueAtUsageLimit": false,
   "inputNeededNotifEnabled": true,
   "agentPushNotifEnabled": true
 }
