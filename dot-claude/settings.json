@@ -87,7 +87,9 @@
   "feedbackDrafts": "notify",
   "effortLevel": "medium",
   "autoCompactWindow": 200000,
-  "askUserQuestionTimeout": "never",
+  "awaySummaryEnabled": false,
+  "askUserQuestionTimeout": "60s",
+  "dialogExpiry": "60s",
   "autoUpdatesChannel": "stable",
   "autoMemoryEnabled": false,
   "theme": "dark",
@@ -95,6 +97,9 @@
   "verbose": false,
   "switchModelsOnFlag": false,
   "autoContinueAtUsageLimit": false,
+  "terminalProgressBarEnabled": false,
+  "remoteControlAtStartup": false,
   "inputNeededNotifEnabled": true,
-  "agentPushNotifEnabled": true
+  "agentPushNotifEnabled": true,
+  "crossSessionInbound": "accept"
 }
