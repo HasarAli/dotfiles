@@ -22,7 +22,7 @@ return {
     })
   end,
   keys = {
-    { '<leader>mp', '<Plug>(md-render-preview)', desc = 'Markdown Preview (split)' },
-    { '<leader>mt', '<Plug>(md-render-preview-tab)', desc = 'Markdown Preview (tab)' },
+    { '<leader>mr', '<Plug>(md-render-toggle)', desc = '[R]aw/render toggle' },
+    { '<leader>ms', '<cmd>vert MdRender split<cr>', desc = '[S]ide-by-side source and render' },
   },
 }
