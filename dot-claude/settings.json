@@ -87,11 +87,6 @@
   "feedbackDrafts": "notify",
   "effortLevel": "medium",
   "autoCompactWindow": 200000,
-  "modelSettings": {
-    "claude-fable-5-1": {
-      "effortLevel": "xhigh"
-    }
-  },
   "askUserQuestionTimeout": "never",
   "autoMemoryEnabled": false,
   "theme": "dark",
