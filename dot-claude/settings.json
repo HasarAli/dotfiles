@@ -27,15 +27,7 @@
   "disableClaudeAiConnectors": true,
   "disableBundledSkills": true,
   "skillOverrides": {
-    "artifact-design": "off",
-    "keybindings-help": "off",
-    "schedule": "off",
-    "init": "off",
-    "review": "off",
-    "security-review": "off",
     "anthropic-skills:docs": "off",
-    "anthropic-skills:morning": "off",
-    "anthropic-skills:import-memory": "off",
     "anthropic-skills:docx": "off",
     "anthropic-skills:pptx": "off",
     "anthropic-skills:xlsx": "off",
@@ -43,10 +35,7 @@
     "anthropic-skills:built-in-browser": "off",
     "anthropic-skills:chrome-browser": "off",
     "anthropic-skills:computer-use": "off",
-    "anthropic-skills:google-workspace": "off",
-    "anthropic-skills:deep-research": "off",
-    "cowork-plugin-management:cowork-plugin-customizer": "off",
-    "cowork-plugin-management:create-cowork-plugin": "off"
+    "anthropic-skills:deep-research": "off"
   },
   "hooks": {
     "SessionStart": [
