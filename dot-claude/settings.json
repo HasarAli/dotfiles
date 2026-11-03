@@ -25,6 +25,7 @@
   },
   "model": "opus",
   "disableClaudeAiConnectors": true,
+  "disableBundledSkills": true,
   "skillOverrides": {
     "claude-in-chrome": "user-invocable-only",
     "claude-api": "user-invocable-only",
