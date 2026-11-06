@@ -82,6 +82,45 @@ return {
     end,
   },
   {
+    'nvim-neotest/neotest',
+    dependencies = { 'nvim-neotest/nvim-nio', 'nvim-lua/plenary.nvim', 'marilari88/neotest-vitest' },
+    keys = {
+      { '<leader>Tt', function() require('neotest').run.run() end, desc = '[T]est nearest' },
+      { '<leader>Tf', function() require('neotest').run.run(vim.fn.expand '%') end, desc = '[T]est [F]ile' },
+      { '<leader>Tl', function() require('neotest').run.run_last() end, desc = '[T]est [L]ast' },
+      { '<leader>Tw', function() require('neotest').watch.toggle(vim.fn.expand '%') end, desc = '[T]est [W]atch file' },
+      { '<leader>Tx', function() require('neotest').run.stop() end, desc = '[T]est stop' },
+      { '<leader>Ts', function() require('neotest').summary.toggle() end, desc = '[T]est [S]ummary' },
+      { '<leader>To', function() require('neotest').output.open { enter = true } end, desc = '[T]est [O]utput' },
+    },
+    opts = function()
+      local function bin(path, name)
+        local root = project_root(path)
+        return root and project_bin(root, name)
+      end
+      local vitest = require 'neotest-vitest' {
+        -- Vite+ bundles vitest without a bin of its own
+        vitestCommand = function(path)
+          local vp = bin(path, 'vp')
+          return vp and vp .. ' test' or bin(path, 'vitest') or 'vitest'
+        end,
+      }
+      -- The adapter only claims files where package.json lists vitest, which a
+      -- Vite+ project doesn't
+      vitest.is_test_file = function(path)
+        local name = vim.fs.basename(path)
+        local is_test = name:match '%.test%.[cm]?[jt]sx?$' or name:match '%.spec%.[cm]?[jt]sx?$' or path:match '/__tests__/'
+        return is_test ~= nil and (bin(path, 'vp') or bin(path, 'vitest')) ~= nil
+      end
+      -- neotest parses test files in a child nvim started with -u NONE, which
+      -- lacks the typescriptreact -> tsx parser mapping; parse in this one,
+      -- as neotest itself does when the child fails
+      local treesitter = require('neotest.lib').treesitter
+      treesitter.parse_positions = treesitter._parse_positions
+      return { adapters = { vitest } }
+    end,
+  },
+  {
     'mfussenegger/nvim-dap',
     -- Runs as an opts fragment right before the base dap config; registers
     -- the adapter as a side effect and leaves opts untouched.
