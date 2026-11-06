@@ -16,7 +16,6 @@ return {
       { '<leader>g', group = '[G]it' },
       { '<leader>m', group = '[M]arkdown' },
       { '<leader>d', group = '[D]ebug' },
-      { '<leader>x', group = 'Diagnostics' },
       { 'gr', group = 'LSP Actions', mode = { 'n' } },
     },
   },
