@@ -16,7 +16,9 @@ return {
   },
   -- Populated by language modules (lua/langs/*.lua) via opts fragments:
   -- servers is a name -> vim.lsp.Config map, tools a list of Mason packages.
-  opts = { servers = {}, tools = {} },
+  -- project_servers is like servers, but their binaries come from the project
+  -- (node_modules), so Mason doesn't install them.
+  opts = { servers = {}, project_servers = {}, tools = {} },
   config = function(_, opts)
     vim.api.nvim_create_autocmd('LspAttach', {
       group = vim.api.nvim_create_augroup('kickstart-lsp-attach', { clear = true }),
@@ -30,6 +32,8 @@ return {
         map('gra', vim.lsp.buf.code_action, '[G]oto Code [A]ction', { 'n', 'x' })
         -- WARN: grD = Declaration (e.g. C header), not Definition
         map('grD', vim.lsp.buf.declaration, '[G]oto [D]eclaration')
+        -- `only` matches by prefix, so this also picks source.fixAll.oxc / .eslint
+        map('grf', function() vim.lsp.buf.code_action { context = { only = { 'source.fixAll' } }, apply = true } end, '[F]ix all')
 
         local client = vim.lsp.get_client_by_id(event.data.client_id)
         if client and client:supports_method('textDocument/documentHighlight', event.buf) then
@@ -65,7 +69,7 @@ return {
     vim.list_extend(ensure_installed, opts.tools)
     require('mason-tool-installer').setup { ensure_installed = ensure_installed }
 
-    for name, server in pairs(opts.servers) do
+    for name, server in pairs(vim.tbl_extend('error', opts.servers, opts.project_servers)) do
       vim.lsp.config(name, server)
       vim.lsp.enable(name)
     end
