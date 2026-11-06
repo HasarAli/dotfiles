@@ -5,8 +5,18 @@ return {
   config = function()
     -- va) yinq ci'
     require('mini.ai').setup { n_lines = 500 }
-    -- saiw) sd' sr)'
-    require('mini.surround').setup()
+    -- gsaiw) gsd' gsr)'  (gs, not s: flash owns s)
+    require('mini.surround').setup {
+      mappings = {
+        add = 'gsa',
+        delete = 'gsd',
+        find = 'gsf',
+        find_left = 'gsF',
+        highlight = 'gsh',
+        replace = 'gsr',
+        update_n_lines = 'gsn',
+      },
+    }
     require('mini.pairs').setup()
 
     require('mini.files').setup()
