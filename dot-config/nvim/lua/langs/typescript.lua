@@ -53,6 +53,8 @@ return {
           if root and tsgo_cmd(root) then on_dir(root) end
         end,
         cmd = function(dispatchers, config) return vim.lsp.rpc.start(tsgo_cmd(config.root_dir), dispatchers, { cwd = config.root_dir }) end,
+        -- vp_lint/vp_fmt use UTF-16; one encoding per buffer keeps their edits in line
+        capabilities = { general = { positionEncodings = { 'utf-16' } } },
       }
       opts.servers.ts_ls = {
         root_dir = function(buf, on_dir)

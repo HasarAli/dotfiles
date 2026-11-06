@@ -23,7 +23,7 @@ return {
         },
       }
       -- Markdown: cross-file link completion, references, rename. Standalone binary.
-      opts.servers.marksman = {}
+      opts.servers.marksman = { filetypes = { 'markdown' } }
     end,
   },
 }
