@@ -1,4 +1,5 @@
 {
+  "SchemaStore.nvim": { "branch": "main", "commit": "06012297e4d5d089ce5ac4cc8011a8f3c0148190" },
   "blink.cmp": { "branch": "main", "commit": "78336bc89ee5365633bcf754d93df01678b5c08f" },
   "catppuccin": { "branch": "main", "commit": "edefef779ab08ce1a4a404713e3012b0d202bd35" },
   "conform.nvim": { "branch": "master", "commit": "016802de402556da54c36bd7359b441266b01cdd" },
