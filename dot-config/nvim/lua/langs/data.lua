@@ -1,4 +1,4 @@
--- JSON/YAML/Markdown servers plus prettier for the config-file formats (json/yaml/md/css).
+-- JSON/YAML/Markdown servers. Formatting comes from the project (conform.lua).
 ---@module 'lazy'
 ---@type LazySpec
 return {
@@ -11,9 +11,6 @@ return {
       opts.servers.yamlls = { filetypes = { 'yaml' } }
       -- Markdown: cross-file link completion, references, rename. Standalone binary.
       opts.servers.marksman = {}
-      vim.list_extend(opts.tools, {
-        'prettier', -- js/ts/json/yaml/css/md formatter
-      })
     end,
   },
 }
