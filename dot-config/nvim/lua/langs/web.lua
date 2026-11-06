@@ -1,4 +1,4 @@
--- The CSS server, and the prose, spelling and Containerfile linters a project
+-- The CSS servers, and the prose, spelling and Containerfile linters a project
 -- configures. A linter runs only where the project has its config.
 
 local function find_up(bufnr, names)
@@ -26,19 +26,6 @@ local markdownlint_configs = {
   '.markdownlint.mjs',
 }
 
-local stylelint_configs = {
-  '.stylelintrc',
-  '.stylelintrc.json',
-  '.stylelintrc.yaml',
-  '.stylelintrc.yml',
-  '.stylelintrc.js',
-  '.stylelintrc.cjs',
-  '.stylelintrc.mjs',
-  'stylelint.config.js',
-  'stylelint.config.cjs',
-  'stylelint.config.mjs',
-}
-
 local cspell_configs = {
   'cspell.json',
   'cspell.jsonc',
@@ -64,6 +51,11 @@ return {
     'neovim/nvim-lspconfig',
     opts = function(_, opts)
       opts.servers.cssls = {}
+      -- Attaches only where the project has a stylelint config. Listed as a
+      -- project server with its Mason package named, since the deprecated
+      -- stylelint-lsp package also maps to stylelint_lsp.
+      opts.project_servers.stylelint_lsp = {}
+      table.insert(opts.tools, 'stylelint-language-server')
       -- Off by default: it flags every unknown word, which is noise while writing code
       table.insert(opts.tools, 'cspell-lsp')
       vim.lsp.config('cspell_ls', {
@@ -93,15 +85,6 @@ return {
         args = { '--no-globs', '--config', function() return find_up(0, markdownlint_configs) end, '-' },
         condition = function(bufnr) return node_bin(bufnr, 'markdownlint-cli2') and find_up(bufnr, markdownlint_configs) ~= nil end,
         cwd = function(bufnr) return vim.fs.dirname(vim.api.nvim_buf_get_name(bufnr)) end,
-      }
-
-      add('css', 'stylelint')
-      opts.linters.stylelint = {
-        cmd = function() return node_bin(0, 'stylelint') end,
-        condition = function(bufnr) return node_bin(bufnr, 'stylelint') and find_up(bufnr, stylelint_configs) ~= nil end,
-        -- Run from the config's directory: configs can hold paths relative to
-        -- it. stylelint-lsp can't; it runs from the nearest package.json.
-        cwd = function(bufnr) return vim.fs.dirname(find_up(bufnr, stylelint_configs)) end,
       }
 
       for _, ft in ipairs(vale_filetypes) do

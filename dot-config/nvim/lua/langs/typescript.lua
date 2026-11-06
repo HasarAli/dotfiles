@@ -1,5 +1,5 @@
 -- Prefers the project's own tooling from node_modules: tsgo (Effect-patched
--- when the project has @effect/tsgo) and Vite+'s oxlint/oxfmt servers.
+-- when the project has @effect/tsgo), oxlint and Vite+'s oxfmt server.
 -- Projects on TypeScript < 7 get ts_ls instead; eslint attaches only where
 -- the project has an eslint config.
 local js_filetypes = { 'javascript', 'javascriptreact', 'typescript', 'typescriptreact' }
@@ -25,21 +25,6 @@ local function tsgo_cmd(root)
   if (tonumber(version:match '^(%d+)') or 0) >= 7 then return { project_bin(root, 'tsc'), '--lsp', '--stdio' } end
 end
 
----@param subcommand 'lint'|'fmt'
----@return vim.lsp.Config
-local function vite_plus_server(subcommand, filetypes)
-  return {
-    filetypes = filetypes,
-    root_dir = function(buf, on_dir)
-      local root = project_root(buf)
-      if root and project_bin(root, 'vp') then on_dir(root) end
-    end,
-    cmd = function(dispatchers, config)
-      return vim.lsp.rpc.start({ project_bin(config.root_dir, 'vp'), subcommand, '--lsp' }, dispatchers, { cwd = config.root_dir })
-    end,
-  }
-end
-
 ---@module 'lazy'
 ---@type LazySpec
 return {
@@ -53,7 +38,7 @@ return {
           if root and tsgo_cmd(root) then on_dir(root) end
         end,
         cmd = function(dispatchers, config) return vim.lsp.rpc.start(tsgo_cmd(config.root_dir), dispatchers, { cwd = config.root_dir }) end,
-        -- vp_lint/vp_fmt use UTF-16; one encoding per buffer keeps their edits in line
+        -- oxlint/vp_fmt use UTF-16; one encoding per buffer keeps their edits in line
         capabilities = { general = { positionEncodings = { 'utf-16' } } },
       }
       opts.servers.ts_ls = {
@@ -62,20 +47,32 @@ return {
           if not tsgo_cmd(root) then on_dir(root) end
         end,
       }
-      opts.project_servers.vp_lint = vite_plus_server('lint', js_filetypes)
-      opts.project_servers.vp_fmt = vite_plus_server('fmt', {
-        'javascript',
-        'javascriptreact',
-        'typescript',
-        'typescriptreact',
-        'json',
-        'jsonc',
-        'yaml',
-        'toml',
-        'markdown',
-        'css',
-        'html',
-      })
+      -- lspconfig's oxlint falls back to `vp lint --lsp` in Vite+ projects
+      opts.project_servers.oxlint = {}
+      -- TODO: switch to conform's oxfmt once a release has its vp fallback:
+      -- https://github.com/stevearc/conform.nvim/pull/903
+      opts.project_servers.vp_fmt = {
+        root_dir = function(buf, on_dir)
+          local root = project_root(buf)
+          if root and project_bin(root, 'vp') then on_dir(root) end
+        end,
+        cmd = function(dispatchers, config)
+          return vim.lsp.rpc.start({ project_bin(config.root_dir, 'vp'), 'fmt', '--lsp' }, dispatchers, { cwd = config.root_dir })
+        end,
+        filetypes = {
+          'javascript',
+          'javascriptreact',
+          'typescript',
+          'typescriptreact',
+          'json',
+          'jsonc',
+          'yaml',
+          'toml',
+          'markdown',
+          'css',
+          'html',
+        },
+      }
       -- Lint only; prettier (via conform) owns formatting where a project uses it
       opts.servers.eslint = { settings = { format = false } }
       vim.list_extend(opts.tools, {

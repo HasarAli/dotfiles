@@ -62,7 +62,6 @@ return {
       -- the project has their config (require_cwd).
       formatters = {
         prettier = { require_cwd = true },
-        -- Run from the config's directory: configs can hold paths relative to it
         stylelint = {
           cwd = util.root_file {
             '.stylelintrc',
