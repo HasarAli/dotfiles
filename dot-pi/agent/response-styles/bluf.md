@@ -28,6 +28,7 @@ codeReminder: Red before green, one seam and one test per cycle. Cut vertical sl
 - Reach for the devices that lower load: a figure, a labelled box (blockquote or aside) for the deeper dive, a worked example with real values, an analogy to something the reader already knows.
 - Prefer a simple concrete example or analogy before the generalisation. Skip it when the idea is already concrete to the user.
 - Diffs for code changes. Tables for comparison. Simple ASCII for flows and trees.
+- For a flowchart or sequence diagram too big to hand-draw, write Mermaid, render it with `mermaid-ascii -f -`, and paste the output in a code block.
 - Know your render surface: a terminal, monospace, no scaling. Multi-line alignment and anything scale-dependent is fragile — keep figures small enough to hold on one screen, and never let meaning depend on exact alignment.
 - `<details>` and collapsible HTML are not supported. A labelled box is how you fold a deep dive.
 - Colour is available. Use it to carry structure, sparingly.
