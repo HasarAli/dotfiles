@@ -8,7 +8,7 @@ return {
   config = function()
     local query = vim.treesitter.query.parse(
       'markdown',
-      '(fenced_code_block (info_string (language) @lang) (code_fence_content) @content (#eq? @lang "mermaid")) @block'
+      '(fenced_code_block (info_string (language) @lang) (code_fence_content) @content (#eq? @lang "mermaid"))'
     )
     local cache = {} ---@type table<string, render.md.mark.Line[]>
 
@@ -37,11 +37,12 @@ return {
         for id, captured in pairs(match) do
           nodes[query.captures[id]] = captured[1]
         end
-        local _, _, end_row, end_col = nodes.block:range()
-        local fence_row = end_col == 0 and end_row - 1 or end_row
+        -- Anchored to the last source line: the closing fence is concealed, and its virt_lines with it.
+        local _, _, end_row, end_col = nodes.content:range()
+        local last_row = end_col == 0 and end_row - 1 or end_row
         marks[#marks + 1] = {
           conceal = false,
-          start_row = fence_row,
+          start_row = last_row,
           start_col = 0,
           opts = { virt_lines = draw(vim.treesitter.get_node_text(nodes.content, ctx.buf)) },
         }
