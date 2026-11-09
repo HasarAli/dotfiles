@@ -51,6 +51,8 @@ return {
     end
 
     require('render-markdown').setup {
+      -- Stay rendered while editing and selecting; anti-conceal still shows the cursor line raw.
+      render_modes = true,
       custom_handlers = { markdown = { extends = true, parse = mermaid } },
     }
   end,
