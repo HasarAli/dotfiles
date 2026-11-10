@@ -13,17 +13,20 @@ return {
     local cache = {} ---@type table<string, render.md.mark.Line[]>
 
     ---@return render.md.mark.Line[]
-    local function draw(src)
-      if not cache[src] then
-        local out = vim.system({ 'mermaid-ascii', '-f', '-' }, { stdin = src, text = true }):wait()
+    local function draw(src, width)
+      local key = width .. '\0' .. src
+      if not cache[key] then
+        -- --max-width only tightens node spacing; a graph that still doesn't fit renders anyway.
+        local cmd = { 'mermaid-ascii', '--max-width', tostring(width), '-f', '-' }
+        local out = vim.system(cmd, { stdin = src, text = true }):wait()
         if out.code == 0 then
-          cache[src] = vim.tbl_map(function(l) return { { l, 'RenderMarkdownCode' } } end, vim.split(out.stdout, '\n', { trimempty = true }))
+          cache[key] = vim.tbl_map(function(l) return { { l, 'RenderMarkdownCode' } } end, vim.split(out.stdout, '\n', { trimempty = true }))
         else
           local msg = out.stderr:match 'msg="(.-)"' or vim.trim(out.stderr)
-          cache[src] = { { { 'mermaid-ascii: ' .. msg, 'DiagnosticWarn' } } }
+          cache[key] = { { { 'mermaid-ascii: ' .. msg, 'DiagnosticWarn' } } }
         end
       end
-      return cache[src]
+      return cache[key]
     end
 
     -- Draws each mermaid block as text below its closing fence; images would need mmdc and Chromium.
@@ -31,6 +34,8 @@ return {
     ---@return render.md.Mark[]
     local function mermaid(ctx)
       if vim.fn.executable 'mermaid-ascii' == 0 then return {} end
+      local info = vim.fn.getwininfo(vim.fn.bufwinid(ctx.buf))[1]
+      local width = info and info.width - info.textoff or vim.o.columns
       local marks = {} ---@type render.md.Mark[]
       for _, match in query:iter_matches(ctx.root, ctx.buf) do
         local nodes = {}
@@ -44,7 +49,7 @@ return {
           conceal = false,
           start_row = last_row,
           start_col = 0,
-          opts = { virt_lines = draw(vim.treesitter.get_node_text(nodes.content, ctx.buf)) },
+          opts = { virt_lines = draw(vim.treesitter.get_node_text(nodes.content, ctx.buf), width) },
         }
       end
       return marks
