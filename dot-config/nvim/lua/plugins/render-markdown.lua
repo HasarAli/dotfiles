@@ -35,7 +35,9 @@ return {
     local function mermaid(ctx)
       if vim.fn.executable 'mermaid-ascii' == 0 then return {} end
       local info = vim.fn.getwininfo(vim.fn.bufwinid(ctx.buf))[1]
-      local width = info and info.width - info.textoff or vim.o.columns
+      local window = info and info.width - info.textoff or vim.o.columns
+      -- Stops short of the colorcolumn, like prose does.
+      local width = math.min(window, tonumber(vim.o.colorcolumn) - 1)
       local marks = {} ---@type render.md.Mark[]
       for _, match in query:iter_matches(ctx.root, ctx.buf) do
         local nodes = {}
