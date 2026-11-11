@@ -29,15 +29,29 @@ return {
       return cache[key]
     end
 
+    -- First column of win's colorcolumn, which may be empty, a list ("80,120") or relative to textwidth ("+1").
+    ---@return integer?
+    local function colorcolumn(win)
+      local first = vim.wo[win].colorcolumn:match '^[^,]+'
+      if not first then return nil end
+      if first:match '^[+-]' then
+        local tw = vim.bo[vim.api.nvim_win_get_buf(win)].textwidth
+        return tw > 0 and tw + tonumber(first) or nil
+      end
+      return tonumber(first)
+    end
+
     -- Draws each mermaid block as text below its closing fence; images would need mmdc and Chromium.
     ---@param ctx render.md.handler.Context
     ---@return render.md.Mark[]
     local function mermaid(ctx)
       if vim.fn.executable 'mermaid-ascii' == 0 then return {} end
-      local info = vim.fn.getwininfo(vim.fn.bufwinid(ctx.buf))[1]
-      local window = info and info.width - info.textoff or vim.o.columns
+      local win = vim.fn.bufwinid(ctx.buf)
+      local info = vim.fn.getwininfo(win)[1]
+      local width = info and info.width - info.textoff or vim.o.columns
       -- Stops short of the colorcolumn, like prose does.
-      local width = math.min(window, tonumber(vim.o.colorcolumn) - 1)
+      local cc = info and colorcolumn(win)
+      if cc then width = math.min(width, cc - 1) end
       local marks = {} ---@type render.md.Mark[]
       for _, match in query:iter_matches(ctx.root, ctx.buf) do
         local nodes = {}
