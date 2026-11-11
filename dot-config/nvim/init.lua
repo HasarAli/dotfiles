@@ -53,6 +53,8 @@ vim.o.list = true
 vim.opt.listchars = { tab = '» ', trail = '·', nbsp = '␣' }
 vim.o.inccommand = 'split'
 vim.o.wrap = true
+-- Scroll by screen line; line-wise wheel scrolling bounces over render-markdown's concealed table rows.
+vim.o.smoothscroll = true
 vim.o.cursorline = true
 vim.o.scrolloff = 10
 vim.o.confirm = true
