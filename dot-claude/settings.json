@@ -1,4 +1,6 @@
 {
+  "syncClaudeAiSkills": false,
+  "syncClaudeAiPlugins": false,
   "permissions": {
     "deny": [
       "TaskCreate",
@@ -26,7 +28,6 @@
   "model": "opus",
   "disableClaudeAiConnectors": true,
   "disableBundledSkills": true,
-  "syncClaudeAiSkills": false,
   "hooks": {
     "SessionStart": [
       {
@@ -41,8 +42,12 @@
       }
     ]
   },
+  "worktree": {
+    "baseRef": "fresh"
+  },
   "disableWorkflows": true,
-  "disableArtifact": true,
+  "enableWorkflows": false,
+  "enableArtifact": false,
   "workflowKeywordTriggerEnabled": false,
   "statusLine": {
     "type": "command",
@@ -53,15 +58,23 @@
     "cc-plugin-telemetry@builtin": false,
     "cc-plugin-plugin-authoring@builtin": false
   },
-  "outputStyle": "bluf",
+  "outputStyle": "Concise",
+  "spinnerTipsEnabled": false,
   "feedbackDrafts": "notify",
   "effortLevel": "medium",
   "autoCompactWindow": 200000,
+  "idleCompaction": true,
+  "precomputeCompactionEnabled": true,
+  "promptSuggestionEnabled": false,
+  "responseComparisonEnabled": false,
+  "emojiCompletionEnabled": false,
+  "showThinkingSummaries": false,
   "awaySummaryEnabled": false,
   "askUserQuestionTimeout": "60s",
   "dialogExpiry": "60s",
   "autoUpdatesChannel": "stable",
   "autoMemoryEnabled": false,
+  "autoDreamEnabled": false,
   "theme": "dark",
   "editorMode": "vim",
   "verbose": false,
@@ -69,7 +82,17 @@
   "autoContinueAtUsageLimit": false,
   "terminalProgressBarEnabled": false,
   "remoteControlAtStartup": false,
+  "defaultToAgentsView": true,
+  "leftArrowOpensAgents": true,
+  "prStatusFooterEnabled": false,
+  "respectGitignore": false,
+  "claudeInChromeDefaultEnabled": false,
+  "autoConnectIde": false,
+  "autoInstallIdeExtension": false,
+  "autoUploadSessions": false,
+  "autoAddRemoteControlDaemonWorker": false,
+  "todoFeatureEnabled": false,
+  "crossSessionInbound": "accept",
   "inputNeededNotifEnabled": true,
-  "agentPushNotifEnabled": true,
-  "crossSessionInbound": "accept"
+  "agentPushNotifEnabled": true
 }
